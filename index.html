@@ -3,93 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>70.3 Triathlon Planner</title>
+    <title>Marathon Training Planner</title>
     <style>
         :root {
             --primary: #2563eb;
-            --bg: #f1f5f9;
+            --primary-light: #eff6ff;
+            --bg: #f8fafc;
             --surface: #ffffff;
-            --text: #1e293b;
-            --border: #cbd5e1;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
             
             /* Workout Colors */
-            --swim: #0ea5e9;
-            --swim-bg: #e0f2fe;
-            --bike: #eab308;
-            --bike-bg: #fef9c3;
-            --run: #ef4444;
-            --run-bg: #fee2e2;
+            --lsd: #0ea5e9;
+            --lsd-bg: #e0f2fe;
+            --tempo: #d97706;
+            --tempo-bg: #fef3c7;
+            --interval: #ef4444;
+            --interval-bg: #fee2e2;
+            --easy: #22c55e;
+            --easy-bg: #dcfce7;
             --strength: #8b5cf6;
             --strength-bg: #f3e8ff;
-            --brick: #f97316;
-            --brick-bg: #ffedd5;
         }
 
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        body { font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; line-height: 1.5; }
+        .container { max-width: 1400px; margin: 0 auto; }
         
-        /* Header & Controls */
-        header { background: var(--surface); padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        h1 { margin: 0 0 20px 0; font-size: 1.5rem; }
-        .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; }
-        .control-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: 0.85rem; font-weight: 600; color: #64748b; }
-        input, select { padding: 8px; border: 1px solid var(--border); border-radius: 6px; }
-        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
-        button:hover { opacity: 0.9; }
+        /* Configuration Panel */
+        header { background: var(--surface); padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; border: 1px solid var(--border); }
+        h1 { margin: 0 0 20px 0; font-size: 1.75rem; color: var(--text); font-weight: 800; tracking: -0.025em; }
+        .section-title { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 12px; margin-top: 10px; }
+        
+        .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px; }
+        .control-group { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+        input, select { padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: white; color: var(--text); font-size: 0.9rem; transition: border-color 0.15s; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background-color 0.15s; font-size: 0.9rem; }
+        button:hover { background-color: #1d4ed8; }
         button.secondary { background: white; color: var(--text); border: 1px solid var(--border); }
+        button.secondary:hover { background: #f1f5f9; }
 
-        /* Charts Section */
-        .charts-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .chart-card { background: var(--surface); padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .chart-title { font-weight: 600; margin-bottom: 15px; font-size: 0.9rem; }
+        /* Pacing Table Card */
+        .pace-display { background: var(--primary-light); border-radius: 8px; padding: 16px; margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; border: 1px solid #d0e1fd; }
+        .pace-box { background: white; padding: 10px; border-radius: 6px; border: 1px solid #bfdbfe; text-align: center; }
+        .pace-box .title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .pace-box .val { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-top: 2px; }
+        .pace-box .override { font-size: 0.8rem; border: none; border-bottom: 1px dashed var(--border); width: 60px; text-align: center; padding: 2px; color: var(--text); margin-top: 4px; font-weight: bold; }
+
+        /* Dashboard Metrics */
+        .metrics-bar { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .card { background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         
-        /* CSS Bar Chart */
-        .bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 150px; padding-top: 20px; }
-        .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; height: 100%; justify-content: flex-end; }
-        .bar { width: 100%; background: var(--primary); border-radius: 4px 4px 0 0; transition: height 0.3s; position: relative; }
-        .bar:hover::after { content: attr(data-val); position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; white-space: nowrap; }
-        .bar-label { font-size: 10px; color: #64748b; }
+        /* Bar Chart */
+        .chart-layout { display: flex; align-items: flex-end; gap: 6px; height: 160px; padding-top: 20px; }
+        .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+        .chart-bar { width: 100%; background: var(--primary); border-radius: 4px 4px 0 0; transition: height 0.3s; position: relative; min-height: 2px; }
+        .chart-bar:hover::after { content: attr(data-val); position: absolute; top: -28px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; white-space: nowrap; z-index: 10; }
+        .chart-lbl { font-size: 10px; color: var(--text-muted); font-weight: 600; }
 
-        /* CSS Pie Chart */
-        .pie-wrapper { width: 150px; height: 150px; border-radius: 50%; margin: 0 auto; position: relative; }
-        .pie-legend { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; font-size: 0.8rem; }
-        .legend-item { display: flex; align-items: center; gap: 5px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        /* Donut Summary chart representation */
+        .dist-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .dist-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+        .dist-label { display: flex; align-items: center; gap: 8px; }
+        .indicator-dot { width: 12px; height: 12px; border-radius: 4px; }
 
-        /* Calendar Grid */
-        .calendar { display: flex; flex-direction: column; gap: 2px; }
-        .week-row { display: grid; grid-template-columns: 40px repeat(7, 1fr); gap: 10px; margin-bottom: 15px; }
-        .week-label { font-weight: bold; writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); text-align: center; color: #94a3b8; font-size: 0.8rem; }
+        /* Calendar Grid Architecture */
+        .calendar-container { display: flex; flex-direction: column; gap: 16px; }
+        .calendar-header-days { display: grid; grid-template-columns: 140px repeat(7, 1fr); gap: 12px; padding-left: 10px; }
+        .day-name-label { font-weight: 700; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; }
         
-        .day-cell { background: var(--surface); border-radius: 8px; min-height: 120px; padding: 10px; border: 1px solid transparent; transition: border 0.2s; display: flex; flex-direction: column; gap: 5px; }
-        .day-cell:hover { border-color: var(--primary); }
-        .day-header { font-size: 0.8rem; color: #64748b; margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .phase-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; background: #e2e8f0; color: #475569; }
+        .week-row { display: grid; grid-template-columns: 140px repeat(7, 1fr); gap: 12px; }
+        
+        /* Week Info Box Sidebar */
+        .week-info-sidebar { background: #f1f5f9; border-radius: 10px; border: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
+        .w-meta-title { font-weight: 800; font-size: 0.9rem; color: var(--text); }
+        .w-meta-phase { font-size: 0.75rem; font-weight: 700; color: #475569; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; display: inline-block; width: max-content; margin-top: 4px; }
+        .w-meta-totalkm { margin-top: auto; font-size: 1.1rem; font-weight: 800; color: var(--primary); border-top: 1px solid #cbd5e1; padding-top: 8px; }
+        
+        /* Individual Cells */
+        .day-cell { background: var(--surface); border-radius: 10px; min-height: 140px; padding: 12px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: all 0.2s; display: flex; flex-direction: column; gap: 6px; cursor: pointer; position: relative; box-sizing: border-box; }
+        .day-cell:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(37,99,235,0.08); }
+        .day-cell.race-day-cell { border: 2px solid var(--interval); background: #fff1f2; }
+        
+        .cell-date-header { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+        .race-flag { background: var(--interval); color: white; padding: 1px 5px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
 
-        .workout-item { 
-            padding: 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; 
-            border-left: 3px solid transparent; margin-bottom: 2px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .w-swim { background: var(--swim-bg); color: #0369a1; border-left-color: var(--swim); }
-        .w-bike { background: var(--bike-bg); color: #854d0e; border-left-color: var(--bike); }
-        .w-run { background: var(--run-bg); color: #991b1b; border-left-color: var(--run); }
+        /* Workout Badges inside cells */
+        .workout-badge { padding: 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; line-height: 1.3; cursor: pointer; border-left: 4px solid transparent; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: transform 0.1s; }
+        .workout-badge:hover { transform: translateY(-1px); }
+        
+        .w-lsd { background: var(--lsd-bg); color: #0369a1; border-left-color: var(--lsd); }
+        .w-tempo { background: var(--tempo-bg); color: #92400e; border-left-color: var(--tempo); }
+        .w-interval { background: var(--interval-bg); color: #991b1b; border-left-color: var(--interval); }
+        .w-easy { background: var(--easy-bg); color: #166534; border-left-color: var(--easy); }
         .w-strength { background: var(--strength-bg); color: #5b21b6; border-left-color: var(--strength); }
-        .w-brick { background: var(--brick-bg); color: #c2410c; border-left-color: var(--brick); }
-
-        /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 100; }
-        .modal { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; }
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .full-width { grid-column: span 2; }
-        textarea { width: 100%; height: 80px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; resize: none; }
         
-        @media (max-width: 768px) {
-            .charts-container { grid-template-columns: 1fr; }
-            .week-row { grid-template-columns: 1fr; gap: 5px; }
-            .week-label { writing-mode: horizontal-tb; transform: none; text-align: left; margin-bottom: 5px; }
+        .badge-title { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .badge-metrics { font-size: 0.7rem; color: opacity 0.8; display: flex; justify-content: space-between; }
+
+        /* Modal Architecture */
+        .modal-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal-body { background: white; padding: 28px; border-radius: 16px; width: 95%; max-width: 550px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+        .modal-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+        .modal-title-row h2 { margin: 0; font-size: 1.3rem; font-weight: 800; }
+        .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; padding: 0; }
+        
+        .form-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .span-2 { grid-column: span 2; }
+        textarea { width: 100%; height: 70px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; resize: none; box-sizing: border-box; font-family: inherit; font-size: 0.9rem; }
+        
+        @media (max-width: 1024px) {
+            .calendar-header-days { display: none; }
+            .week-row { grid-template-columns: 1fr; gap: 8px; margin-bottom: 24px; background: #fff; padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+            .week-info-sidebar { flex-direction: row; align-items: center; padding: 8px; }
+            .w-meta-totalkm { margin-top: 0; border-top: none; padding-top: 0; }
+            .day-cell { min-height: auto; }
+            .metrics-bar { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -97,372 +130,520 @@
 
 <div class="container">
     <header>
-        <h1>70.3 Training Planner</h1>
-        <div class="controls">
+        <h1>Dedicated Marathon Training Planner</h1>
+        
+        <div class="section-title">1. Schedule Details (Targeting Sunday Race Finish)</div>
+        <div class="controls-grid">
             <div class="control-group">
-                <label>Race Date</label>
-                <input type="date" id="raceDate">
+                <label>Race Date (Must be a Sunday)</label>
+                <input type="date" id="raceDate" onchange="handleRaceDateChange()">
             </div>
             <div class="control-group">
-                <label>Start Date</label>
-                <input type="date" id="startDate">
+                <label>Plan Length</label>
+                <select id="totalWeeks" onchange="handleTimelineRecalculation()">
+                    <option value="12">12 Weeks (Accelerated)</option>
+                    <option value="16">16 Weeks (Standard)</option>
+                    <option value="18" selected>18 Weeks (Recommended)</option>
+                    <option value="20">20 Weeks (Extended)</option>
+                </select>
             </div>
             <div class="control-group">
-                <label>Plan Length (Weeks)</label>
-                <input type="number" id="totalWeeks" value="20">
+                <label>Calculated Training Start Date</label>
+                <input type="date" id="startDate" disabled style="background-color: #f1f5f9; color: #475569; font-weight: 600;">
             </div>
             <div class="control-group">
-                <label>Actions</label>
-                <div style="display:flex; gap:5px">
-                    <button onclick="generatePlan()">Reset to Template</button>
-                    <button class="secondary" onclick="exportICS()">Export .ICS</button>
-                </div>
+                <label>Target Finish Time (HH:MM:SS)</label>
+                <input type="text" id="targetTime" value="03:45:00" onchange="calculatePaceZones()">
             </div>
         </div>
-        <div class="controls" style="margin-top: 15px;">
-             <div class="control-group">
-                <label>Base Weeks</label>
-                <input type="number" id="baseWeeks" value="8" onchange="updatePhases()">
+
+        <div class="section-title">2. Macro Training Phase Distribution (Weeks)</div>
+        <div class="controls-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="control-group">
+                <label>Base Phase</label>
+                <input type="number" id="baseWeeks" value="6" onchange="validateAndBuildPhases()">
             </div>
             <div class="control-group">
-                <label>Build Weeks</label>
-                <input type="number" id="buildWeeks" value="6" onchange="updatePhases()">
+                <label>Build Phase</label>
+                <input type="number" id="buildWeeks" value="6" onchange="validateAndBuildPhases()">
             </div>
             <div class="control-group">
-                <label>Peak Weeks</label>
-                <input type="number" id="peakWeeks" value="4" onchange="updatePhases()">
+                <label>Peak Phase</label>
+                <input type="number" id="peakWeeks" value="4" onchange="validateAndBuildPhases()">
             </div>
             <div class="control-group">
-                <label>Taper Weeks</label>
-                <input type="number" id="taperWeeks" value="2" onchange="updatePhases()">
+                <label>Taper Phase</label>
+                <input type="number" id="taperWeeks" value="2" onchange="validateAndBuildPhases()">
             </div>
+        </div>
+
+        <div class="section-title">3. Computed Dynamic Velocity Pacing Bands (min/km)</div>
+        <div class="pace-display" id="paceZonesGrid">
+            <!-- Programmatically initialized, supports structural custom text overrides -->
+        </div>
+
+        <div class="btn-group">
+            <button onclick="generateStructuredTemplate()">Reset to Progressive Template</button>
+            <button class="secondary" onclick="exportToICSFile()">Export Full Calendar (.ICS)</button>
         </div>
     </header>
 
-    <div class="charts-container">
-        <div class="chart-card">
-            <div class="chart-title">Weekly Training Volume (Minutes)</div>
-            <div class="bar-chart" id="volumeChart"></div>
+    <!-- Analytics Section -->
+    <div class="metrics-bar">
+        <div class="card">
+            <div class="section-title" style="margin-top:0">Weekly Volume Trend (Total Kilometers)</div>
+            <div class="chart-layout" id="volumeChart"></div>
         </div>
-        <div class="chart-card">
-            <div class="chart-title">Intensity Distribution</div>
-            <div class="pie-wrapper" id="intensityChart"></div>
-            <div class="pie-legend" id="intensityLegend"></div>
+        <div class="card">
+            <div class="section-title" style="margin-top:0">Pace Category Load</div>
+            <div class="dist-list" id="distributionReport"></div>
         </div>
     </div>
 
-    <div class="calendar" id="calendarGrid">
-        <!-- Generated via JS -->
+    <!-- Calendar View -->
+    <div class="calendar-header-days">
+        <div></div><!-- Spacer for structural sidebar alignment -->
+        <div class="day-name-label">Monday</div>
+        <div class="day-name-label">Tuesday</div>
+        <div class="day-name-label">Wednesday</div>
+        <div class="day-name-label">Thursday</div>
+        <div class="day-name-label">Friday</div>
+        <div class="day-name-label">Saturday</div>
+        <div class="day-name-label">Sunday</div>
+    </div>
+    
+    <div class="calendar-container" id="calendarGrid">
+        <!-- Rendered dynamically -->
     </div>
 </div>
 
-<!-- Edit Modal -->
-<div class="modal-overlay" id="workoutModal">
-    <div class="modal">
-        <div class="modal-header">
-            <h2 id="modalTitle">Edit Workout</h2>
-            <button class="secondary" onclick="closeModal()" style="padding: 5px 10px;">✕</button>
+<!-- Add/Edit Modal Context -->
+<div class="modal-mask" id="workoutModal">
+    <div class="modal-body">
+        <div class="modal-title-row">
+            <h2 id="modalTitle">Edit Workout Entry</h2>
+            <button class="close-btn" onclick="closeModal()">✕</button>
         </div>
-        <form id="workoutForm" onsubmit="saveWorkout(event)">
-            <input type="hidden" id="wId">
-            <input type="hidden" id="wDate">
-            <div class="form-grid">
+        <form id="workoutForm" onsubmit="commitWorkoutSave(event)">
+            <input type="hidden" id="modalId">
+            <input type="hidden" id="modalDateStr">
+            
+            <div class="form-layout">
                 <div class="control-group">
-                    <label>Type</label>
-                    <select id="wType">
-                        <option value="swim">Swim</option>
-                        <option value="bike">Bike</option>
-                        <option value="run">Run</option>
-                        <option value="strength">Strength</option>
-                        <option value="brick">Brick</option>
+                    <label>Run Type / Category</label>
+                    <select id="formType" onchange="matchFormPaceToType()">
+                        <option value="easy">Easy / Recovery</option>
+                        <option value="lsd">LSD (Long Slow Distance)</option>
+                        <option value="tempo">Tempo / Threshold</option>
+                        <option value="interval">Interval (VO2 Max)</option>
+                        <option value="strength">Strength / Mobility</option>
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>Duration (min)</label>
-                    <input type="number" id="wDuration" required>
+                    <label>Duration (Minutes)</label>
+                    <input type="number" id="formDuration" required min="1">
                 </div>
-                <div class="control-group full-width">
-                    <label>Title</label>
-                    <input type="text" id="wTitle" required>
-                </div>
-                <div class="control-group">
-                    <label>Distance (km/m)</label>
-                    <input type="text" id="wDist">
+                <div class="control-group span-2">
+                    <label>Workout Name / Title</label>
+                    <input type="text" id="formTitle" required placeholder="e.g. Aerobic Threshold Cruise">
                 </div>
                 <div class="control-group">
-                    <label>Intensity (Zone/RPE)</label>
-                    <input type="text" id="wInt">
+                    <label>Target Distance (km)</label>
+                    <input type="number" id="formDistance" step="0.1" required>
                 </div>
-                <div class="control-group full-width">
-                    <label>Notes / Description</label>
-                    <textarea id="wNotes"></textarea>
+                <div class="control-group">
+                    <label>Target Pace (min/km)</label>
+                    <input type="text" id="formPace">
+                </div>
+                <div class="control-group">
+                    <label>Intensity Profile (RPE / HR Zone)</label>
+                    <input type="text" id="formIntensity" placeholder="e.g. Zone 2, RPE 4">
+                </div>
+                <div class="control-group">
+                    <label>Fueling Strategy / Hydration</label>
+                    <input type="text" id="formFueling" placeholder="e.g. 60g CHO/hr, electrolytes">
+                </div>
+                <div class="control-group span-2">
+                    <label>Detailed Execution Instructions</label>
+                    <textarea id="formInstructions" placeholder="Enter warm up, specific sets, recovery intervals, and cool down details..."></textarea>
                 </div>
             </div>
-            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
-                <button type="button" class="secondary" onclick="deleteWorkout()" style="color: #ef4444; border-color: #ef4444;">Delete</button>
-                <button type="submit">Save Workout</button>
+            
+            <div style="margin-top: 24px; display: flex; justify-content: space-between;">
+                <button type="button" class="secondary" onclick="executeWorkoutDeletion()" style="color: #ef4444; border-color: #fca5a5;">Delete Entry</button>
+                <button type="submit">Save Workout Data</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // --- State Management ---
-    let appState = {
+    // --- Application Global State Storage ---
+    let plannerState = {
         settings: {
-            raceDate: null,
-            startDate: null,
-            phases: { base: 8, build: 6, peak: 4, taper: 2 }
+            raceDate: "",
+            startDate: "",
+            totalWeeks: 18,
+            targetTime: "03:45:00",
+            phases: { base: 6, build: 6, peak: 4, taper: 2 },
+            customPaceOverrides: { easy: "", lsd: "", tempo: "", interval: "" }
         },
-        workouts: [] // Array of { id, dateStr, type, title, duration, dist, intensity, notes }
+        calculatedPaces: {},
+        workouts: []
     };
 
-    // --- Initialization ---
+    // --- Core Initializer ---
     document.addEventListener('DOMContentLoaded', () => {
-        loadState();
-        if (!appState.settings.raceDate) {
-            // Default: Race is 20 weeks from today
-            const today = new Date();
-            const race = new Date(today);
-            race.setDate(today.getDate() + (20 * 7));
-            document.getElementById('raceDate').value = race.toISOString().split('T')[0];
-            calcDates('race');
-        } else {
-            document.getElementById('raceDate').value = appState.settings.raceDate;
-            document.getElementById('startDate').value = appState.settings.startDate;
-            document.getElementById('baseWeeks').value = appState.settings.phases.base;
-            document.getElementById('buildWeeks').value = appState.settings.phases.build;
-            document.getElementById('peakWeeks').value = appState.settings.phases.peak;
-            document.getElementById('taperWeeks').value = appState.settings.phases.taper;
-            renderAll();
-        }
+        initializeDateBaselines();
+        loadStateFromLocalStorage();
+        syncSettingsInputs();
+        calculatePaceZones(); 
+        handleTimelineRecalculation();
     });
 
-    // --- Date Logic ---
-    const raceInput = document.getElementById('raceDate');
-    const startInput = document.getElementById('startDate');
-    const weeksInput = document.getElementById('totalWeeks');
-
-    raceInput.addEventListener('change', () => calcDates('race'));
-    startInput.addEventListener('change', () => calcDates('start'));
-    weeksInput.addEventListener('change', () => calcDates('weeks'));
-
-    function calcDates(source) {
-        const weeks = parseInt(weeksInput.value);
-        if (source === 'race' && raceInput.value) {
-            const rDate = new Date(raceInput.value);
-            const sDate = new Date(rDate);
-            sDate.setDate(rDate.getDate() - (weeks * 7));
-            startInput.value = sDate.toISOString().split('T')[0];
-        } else if (source === 'start' && startInput.value) {
-            const sDate = new Date(startInput.value);
-            const rDate = new Date(sDate);
-            rDate.setDate(sDate.getDate() + (weeks * 7));
-            raceInput.value = rDate.toISOString().split('T')[0];
-        }
+    function initializeDateBaselines() {
+        // Set Default Race Date to the next logical Sunday 18 weeks away
+        const d = new Date();
+        d.setDate(d.getDate() + (18 * 7));
+        const dayOfWeek = d.getDay();
+        const distanceToSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+        d.setDate(d.getDate() + distanceToSunday);
         
-        appState.settings.raceDate = raceInput.value;
-        appState.settings.startDate = startInput.value;
-        saveState();
-        renderAll();
+        document.getElementById('raceDate').value = d.toISOString().split('T')[0];
+        plannerState.settings.raceDate = d.toISOString().split('T')[0];
     }
 
-    function updatePhases() {
-        appState.settings.phases.base = parseInt(document.getElementById('baseWeeks').value);
-        appState.settings.phases.build = parseInt(document.getElementById('buildWeeks').value);
-        appState.settings.phases.peak = parseInt(document.getElementById('peakWeeks').value);
-        appState.settings.phases.taper = parseInt(document.getElementById('taperWeeks').value);
-        saveState();
-        renderAll();
+    function syncSettingsInputs() {
+        document.getElementById('raceDate').value = plannerState.settings.raceDate;
+        document.getElementById('totalWeeks').value = plannerState.settings.totalWeeks;
+        document.getElementById('targetTime').value = plannerState.settings.targetTime;
+        document.getElementById('baseWeeks').value = plannerState.settings.phases.base;
+        document.getElementById('buildWeeks').value = plannerState.settings.phases.build;
+        document.getElementById('peakWeeks').value = plannerState.settings.phases.peak;
+        document.getElementById('taperWeeks').value = plannerState.settings.phases.taper;
     }
 
-    // --- Template Generator (The Core Logic) ---
-    function generatePlan() {
-        if (!confirm("This will overwrite your current plan with the 70.3 template. Continue?")) return;
+    // --- Timeline Date Operations Engine ---
+    function handleRaceDateChange() {
+        const pickedDate = new Date(document.getElementById('raceDate').value);
+        if (pickedDate.getDay() !== 0) {
+            alert("Notice: Marathons traditionally occur on Sundays. Adjusting selection automatically to the nearest Sunday.");
+            const currentDay = pickedDate.getDay();
+            const offset = currentDay === 0 ? 0 : 7 - currentDay;
+            pickedDate.setDate(pickedDate.getDate() + offset);
+            document.getElementById('raceDate').value = pickedDate.toISOString().split('T')[0];
+        }
+        plannerState.settings.raceDate = document.getElementById('raceDate').value;
+        handleTimelineRecalculation();
+    }
 
-        const startDate = new Date(startInput.value);
-        const newWorkouts = [];
-        const totalWeeks = parseInt(weeksInput.value); // Should be 20 for exact template match
+    function handleTimelineRecalculation() {
+        const totalW = parseInt(document.getElementById('totalWeeks').value);
+        plannerState.settings.totalWeeks = totalW;
+        
+        // Back calculate the start date: 
+        // Sunday of race week is day (totalW * 7) - 1 if starting on Monday day 0.
+        // Therefore, Monday morning Start Date = Race Sunday minus (totalW * 7) + 1 day.
+        const raceSunday = new Date(plannerState.settings.raceDate + "T00:00:00");
+        const calculatedMonday = new Date(raceSunday);
+        calculatedMonday.setDate(raceSunday.getDate() - (totalW * 7) + 1);
+        
+        plannerState.settings.startDate = calculatedMonday.toISOString().split('T')[0];
+        document.getElementById('startDate').value = plannerState.settings.startDate;
+        
+        balancePhasesToMatchTotal(totalW);
+        saveStateToLocalStorage();
+        renderAllViews();
+    }
 
-        // Helper to add workout
-        const add = (dayOffset, type, title, dur, dist, int, notes) => {
-            const d = new Date(startDate);
-            d.setDate(d.getDate() + dayOffset);
-            newWorkouts.push({
-                id: Date.now() + Math.random(),
-                dateStr: d.toISOString().split('T')[0],
-                type, title, duration: dur, dist, intensity: int, notes
-            });
+    function balancePhasesToMatchTotal(targetTotal) {
+        let p = plannerState.settings.phases;
+        let sum = p.base + p.build + p.peak + p.taper;
+        
+        if (sum !== targetTotal) {
+            // Re-proportion modular baseline allocations dynamically
+            p.taper = 2;
+            p.peak = Math.max(2, Math.floor(targetTotal * 0.22));
+            p.build = Math.max(3, Math.floor(targetTotal * 0.33));
+            p.base = targetTotal - (p.taper + p.peak + p.build);
+            
+            document.getElementById('baseWeeks').value = p.base;
+            document.getElementById('buildWeeks').value = p.build;
+            document.getElementById('peakWeeks').value = p.peak;
+            document.getElementById('taperWeeks').value = p.taper;
+        }
+    }
+
+    function validateAndBuildPhases() {
+        const base = parseInt(document.getElementById('baseWeeks').value) || 0;
+        const build = parseInt(document.getElementById('buildWeeks').value) || 0;
+        const peak = parseInt(document.getElementById('peakWeeks').value) || 0;
+        const taper = parseInt(document.getElementById('taperWeeks').value) || 0;
+        
+        const currentSum = base + build + peak + taper;
+        document.getElementById('totalWeeks').value = currentSum;
+        plannerState.settings.totalWeeks = currentSum;
+        plannerState.settings.phases = { base, build, peak, taper };
+        
+        handleTimelineRecalculation();
+    }
+
+    // --- Advanced Velocity Pacing Sub-Engine ---
+    function calculatePaceZones() {
+        const timeStr = document.getElementById('targetTime').value;
+        plannerState.settings.targetTime = timeStr;
+        
+        const tokens = timeStr.split(':');
+        if (tokens.length !== 3) return;
+        
+        const totalSeconds = (parseInt(tokens[0]) * 3600) + (parseInt(tokens[1]) * 60) + parseInt(tokens[2]);
+        const marathonDistanceKm = 42.195;
+        const marathonPaceSecKm = totalSeconds / marathonDistanceKm; // Baseline base target MP seconds/km
+
+        plannerState.calculatedPaces = {
+            marathon: marathonPaceSecKm,
+            easy: marathonPaceSecKm + 75,       // Target MP + 1:15
+            lsd: marathonPaceSecKm + 50,        // Target MP + 0:50
+            tempo: marathonPaceSecKm - 20,      // Target MP - 0:20
+            interval: marathonPaceSecKm - 45    // Target MP - 0:45
         };
 
-        for (let w = 1; w <= totalWeeks; w++) {
-            const weekStartOffset = (w - 1) * 7;
-            const isRecovery = (w % 4 === 0);
-            
-            // Determine Phase based on current settings
-            let phase = 'Base';
-            if (w > appState.settings.phases.base) phase = 'Build';
-            if (w > appState.settings.phases.base + appState.settings.phases.build) phase = 'Peak';
-            if (w > appState.settings.phases.base + appState.settings.phases.build + appState.settings.phases.peak) phase = 'Taper';
-
-            // --- TEMPLATE LOGIC BASED ON TRIATHLETE.COM ---
-            
-            // MONDAY: Rest
-            // (No workout added)
-
-            // TUESDAY: Bike Intervals / Hills
-            let tueTitle = "Bike Power Intervals";
-            let tueDur = 45;
-            let tueDesc = "WU: 10m. MS: Sprints/Intervals. CD: 10m.";
-            if (phase === 'Build') { tueTitle = "Bike Hill Climbs"; tueDur = 60; tueDesc = "VO2Max Hill repeats"; }
-            if (phase === 'Peak') { tueTitle = "Tempo Bike"; tueDur = 60; tueDesc = "Threshold intervals"; }
-            if (isRecovery) { tueDur = 45; tueDesc = "Reduced intensity intervals"; }
-            add(weekStartOffset + 1, 'bike', tueTitle, tueDur, null, "Z4/Z5", tueDesc);
-
-            // WEDNESDAY: Swim + Run
-            // Swim
-            let wedSwimDist = (phase === 'Base') ? "1200y" : "1800y";
-            if (phase === 'Peak') wedSwimDist = "2100y";
-            add(weekStartOffset + 2, 'swim', "Swim Drills & Sets", 45, wedSwimDist, "Z2/Z3", "Drills + Main Set");
-            
-            // Run
-            let wedRunType = "Fartlek Run";
-            let wedRunDur = 30;
-            if (phase === 'Build') { wedRunType = "Lactate Intervals"; wedRunDur = 35; }
-            if (phase === 'Peak') { wedRunType = "Tempo Run"; wedRunDur = 40; }
-            add(weekStartOffset + 2, 'run', wedRunType, wedRunDur, null, "Z4", "High intensity intervals");
-
-            // THURSDAY: Foundation Bike
-            let thuDur = 60;
-            if (isRecovery) thuDur = 30;
-            if (phase === 'Peak') thuDur = 90;
-            add(weekStartOffset + 3, 'bike', "Foundation Bike", thuDur, null, "Z2", "Moderate aerobic intensity");
-
-            // FRIDAY: Swim + Run
-            let friSwimDist = (phase === 'Base') ? "1200y" : "2000y";
-            add(weekStartOffset + 4, 'swim', "Swim Threshold", 50, friSwimDist, "Z4", "Threshold pace efforts");
-            
-            let friRunDur = 35;
-            if (phase === 'Peak') friRunDur = 50;
-            add(weekStartOffset + 4, 'run', "Foundation Run + Strides", friRunDur, null, "Z2", "Steady run with strides at end");
-
-            // WEEKEND LOGIC
-            // Odd weeks: 3 swims, 3 rides, 3 runs (Sat: Bike, Sun: Run)
-            // Even weeks (2, 6...): Brick on Sat
-            
-            const isBrickWeek = (w % 2 === 0);
-
-            if (isBrickWeek) {
-                // SATURDAY: Brick
-                let brickBike = 45;
-                let brickRun = 15;
-                if (phase === 'Build') { brickBike = 60; brickRun = 20; }
-                if (phase === 'Peak') { brickBike = 105; brickRun = 30; }
-                if (w === 20) { // Race Week
-                     add(weekStartOffset + 5, 'swim', "Pre-Race Swim", 20, "1100y", "Z3", "Openers");
-                } else {
-                    add(weekStartOffset + 5, 'brick', "Brick Workout", brickBike + brickRun, null, "Z3", `Bike ${brickBike}m / Run ${brickRun}m`);
-                }
-            } else {
-                // SATURDAY: Long Bike
-                let longBike = 60;
-                if (phase === 'Base') longBike = 90;
-                if (phase === 'Build') longBike = 120;
-                if (phase === 'Peak') longBike = 165; // ~2:45
-                if (isRecovery) longBike = 60;
-                if (w === 20) longBike = 20; // Race week
-                add(weekStartOffset + 5, 'bike', "Long Bike", longBike, null, "Z2", "Endurance Zone 2");
-            }
-
-            // SUNDAY: Long Swim + Long Run
-            if (w === 20) {
-                // RACE DAY
-                add(weekStartOffset + 6, 'swim', "RACE: Swim", 40, "1.2mi", "Race", "70.3 Swim");
-                add(weekStartOffset + 6, 'bike', "RACE: Bike", 180, "56mi", "Race", "70.3 Bike");
-                add(weekStartOffset + 6, 'run', "RACE: Run", 120, "13.1mi", "Race", "70.3 Run");
-            } else {
-                let sunSwim = 1600;
-                if (phase === 'Build') sunSwim = 2100;
-                if (phase === 'Peak') sunSwim = 2500;
-                add(weekStartOffset + 6, 'swim', "Endurance Swim", 60, `${sunSwim}y`, "Z2", "Continuous swim");
-
-                let sunRun = 40;
-                if (phase === 'Base') sunRun = 50;
-                if (phase === 'Build') sunRun = 65;
-                if (phase === 'Peak') sunRun = 80;
-                if (isRecovery) sunRun = 30;
-                add(weekStartOffset + 6, 'run', "Long Run", sunRun, null, "Z2", "Aerobic endurance");
-            }
-        }
-
-        appState.workouts = newWorkouts;
-        saveState();
-        renderAll();
+        renderPacingGrid();
+        saveStateToLocalStorage();
     }
 
-    // --- Rendering ---
-    function renderAll() {
-        renderCalendar();
+    function formatSecondsToPaceString(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+        return `${mins}:${secs}`;
+    }
+
+    function parsePaceStringToSeconds(paceStr) {
+        const tokens = paceStr.split(':');
+        if(tokens.length !== 2) return null;
+        return (parseInt(tokens[0]) * 60) + parseInt(tokens[1]);
+    }
+
+    function handlePaceOverride(type, customValue) {
+        plannerState.settings.customPaceOverrides[type] = customValue;
+        saveStateToLocalStorage();
         renderCharts();
     }
 
-    function renderCalendar() {
+    function getActivePaceStr(type) {
+        if (plannerState.settings.customPaceOverrides[type]) {
+            return plannerState.settings.customPaceOverrides[type];
+        }
+        return formatSecondsToPaceString(plannerState.calculatedPaces[type] || 0);
+    }
+
+    function renderPacingGrid() {
+        const grid = document.getElementById('paceZonesGrid');
+        grid.innerHTML = '';
+        
+        const categories = [
+            { key: 'easy', label: 'Easy / Recovery', desc: 'Aerobic recovery flush' },
+            { key: 'lsd', label: 'LSD (Long Slow)', desc: 'Endurance structural adaptation' },
+            { key: 'marathon', label: 'Target Race Pace', desc: 'Marathon pacing target' },
+            { key: 'tempo', label: 'Tempo / Threshold', desc: 'Lactate clearance power' },
+            { key: 'interval', label: 'Interval (VO2 Max)', desc: 'Aerobic power capacities' }
+        ];
+
+        categories.forEach(c => {
+            const displayPace = getActivePaceStr(c.key);
+            const overrideInputHTML = c.key !== 'marathon' ? 
+                `<input type="text" class="override" placeholder="Override" value="${plannerState.settings.customPaceOverrides[c.key]}" onchange="handlePaceOverride('${c.key}', this.value)">` : '';
+
+            const box = document.createElement('div');
+            box.className = 'pace-box';
+            box.innerHTML = `
+                <div class="title" title="${c.desc}">${c.label}</div>
+                <div class="val">${displayPace}</div>
+                ${overrideInputHTML}
+            `;
+            grid.appendChild(box);
+        });
+    }
+
+    // --- Progressive Template Generator Algorithm ---
+    function generateStructuredTemplate() {
+        if (!confirm("This will overwrite your existing schedule matrix with a clean running template. Proceed?")) return;
+        
+        const totalW = plannerState.settings.totalWeeks;
+        const start = new Date(plannerState.settings.startDate + "T00:00:00");
+        const generatedWorkouts = [];
+
+        const addWorkoutHelper = (dayIndex, type, title, duration, distance, intensity, fueling, instructions) => {
+            const targetDate = new Date(start);
+            targetDate.setDate(start.getDate() + dayIndex);
+            
+            generatedWorkouts.push({
+                id: Date.now() + Math.random(),
+                dateStr: targetDate.toISOString().split('T')[0],
+                type, title, duration, distance, intensity, fueling, instructions
+            });
+        };
+
+        let currentPhase = 'Base';
+        let accumulatedDays = 0;
+
+        for (let w = 1; w <= totalW; w++) {
+            const wOffset = (w - 1) * 7;
+            const isRecoveryWeek = (w % 4 === 0 && w < totalW - 1);
+            
+            if (w > plannerState.settings.phases.base) currentPhase = 'Build';
+            if (w > plannerState.settings.phases.base + plannerState.settings.phases.build) currentPhase = 'Peak';
+            if (w > totalW - plannerState.settings.phases.taper) currentPhase = 'Taper';
+
+            // Scale linear global variables based on current micro/macro timelines
+            let volMultiplier = isRecoveryWeek ? 0.7 : (1 + (w * 0.03));
+            if (currentPhase === 'Taper') volMultiplier = (totalW - w + 1) * 0.35;
+
+            // Tuesday Session: Speedwork / Track / Functional Focus
+            if (currentPhase === 'Base') {
+                addWorkoutHelper(wOffset + 1, 'easy', 'Aerobic Baseline + Strides', 45, Math.round(7 * volMultiplier), 'RPE 4-5', 'Water only', 'Run flat route. Add 5x100m accelerations at the end.');
+            } else if (currentPhase === 'Build') {
+                addWorkoutHelper(wOffset + 1, 'interval', 'VO2 Max Repeat Hils', 50, Math.round(9 * volMultiplier), 'RPE 8', 'Electrolytes pre-run', '6x60s uphill hard charges. Jog down recoveries completely.');
+            } else if (currentPhase === 'Peak') {
+                addWorkoutHelper(wOffset + 1, 'interval', 'Track Classic Yasso 800s', 60, Math.round(11 * volMultiplier), 'RPE 9', 'Pre-run gel hydration', 'Warm up. Execute 8x800m intervals at VO2 Max target pace with equal time recovery jogs.');
+            } else if (currentPhase === 'Taper') {
+                addWorkoutHelper(wOffset + 1, 'easy', 'Taper Sharpener Session', 30, 5, 'RPE 4', 'Water only', 'Relaxed recovery mechanics with 3 subtle strides.');
+            }
+
+            // Wednesday Session: Mid-Week Functional Lift / Mobility Active Flush
+            if (w !== totalW && (w % 2 === 1)) {
+                addWorkoutHelper(wOffset + 2, 'strength', 'Structural Leg Strength & Core', 45, 0, 'RPE 6', 'Protein allocation post', 'Focus on glute activation, single-leg stability splits, and high plank alignments.');
+            } else if (w !== totalW) {
+                addWorkoutHelper(wOffset + 2, 'easy', 'Midweek Recovery Flush', 40, Math.round(6 * volMultiplier), 'RPE 3', 'Water', 'Extremely low pressure recovery tracking.');
+            }
+
+            // Thursday Session: Sustained Cruising Tempo
+            if (currentPhase === 'Base') {
+                addWorkoutHelper(wOffset + 3, 'tempo', 'Aerobic Threshold Continuous Cruise', 45, Math.round(8 * volMultiplier), 'RPE 6', 'Water only', 'Sustained tempo focus pushing standard base respiratory zones.');
+            } else if (currentPhase === 'Build' || currentPhase === 'Peak') {
+                addWorkoutHelper(wOffset + 3, 'tempo', 'Lactate Threshold Progression Sets', 60, Math.round(12 * volMultiplier), 'RPE 7-8', '30g CHO fuel trace', 'Warm up. Execute 3x3000m blocks at target threshold pacing with 3 minute recovery spins.');
+            } else if (currentPhase === 'Taper') {
+                addWorkoutHelper(wOffset + 3, 'tempo', 'Marathon Pace Precision Check', 40, 6, 'RPE 6', 'Simulate race morning timing', 'Lock accurately into target marathon race pace directly for 4km.');
+            }
+
+            // Saturday Session: Short Functional Neuromuscular Prep
+            if (w !== totalW) {
+                addWorkoutHelper(wOffset + 5, 'easy', 'Pre-Long Run Activation Shakeout', 30, 4, 'RPE 3', 'Hydration alignment', 'Keep paths clean and standard to prime the legs for tomorrow.');
+            }
+
+            // Sunday Session: The Long Run / Ultimate Race Event Day
+            if (w === totalW) {
+                addWorkoutHelper(wOffset + 6, 'interval', 'RACE DAY: MARATHON PINNACLE', 240, 42.2, 'MAX RACE EFFORT', '90g CHO/hr strategy + Salt Capsules', 'The culmination of your training cycle. Trust the taper, check early positioning, execute structural mechanics, and clear the neighborhood.');
+            } else {
+                let longDistance = 16 + (w * 1.2);
+                if (isRecoveryWeek) longDistance = longDistance * 0.75;
+                if (currentPhase === 'Peak') longDistance = Math.min(35, longDistance);
+                if (currentPhase === 'Taper') longDistance = w === totalW - 1 ? 16 : 10;
+                
+                longDistance = Math.round(longDistance);
+                let fuelingTarget = longDistance >= 22 ? '60-90g CHO hourly' : '30-40g CHO hourly';
+
+                addWorkoutHelper(wOffset + 6, 'lsd', 'Long Endurance Adaptation Run', Math.round(longDistance * 5.5), longDistance, 'RPE 5 (Zone 2)', fuelingTarget, 'Focus cleanly on breathing rhythm and structural compliance over time on feet.');
+            }
+        }
+
+        plannerState.workouts = generatedWorkouts;
+        saveStateToLocalStorage();
+        renderAllViews();
+    }
+
+    // --- Dynamic DOM View Renderers ---
+    function renderAllViews() {
+        renderCalendarGrid();
+        renderCharts();
+    }
+
+    function renderCalendarGrid() {
         const grid = document.getElementById('calendarGrid');
         grid.innerHTML = '';
-        const startDate = new Date(appState.settings.startDate);
-        const totalWeeks = parseInt(weeksInput.value);
+        
+        const start = new Date(plannerState.settings.startDate + "T00:00:00");
+        const totalW = plannerState.settings.totalWeeks;
 
-        // Header Row
-        const headerRow = document.createElement('div');
-        headerRow.className = 'week-row';
-        headerRow.innerHTML = `<div></div>` + 
-            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<div style="text-align:center; font-weight:bold; color:#64748b">${d}</div>`).join('');
-        grid.appendChild(headerRow);
-
-        for (let w = 1; w <= totalWeeks; w++) {
+        for (let w = 1; w <= totalW; w++) {
             const row = document.createElement('div');
             row.className = 'week-row';
             
-            // Determine Phase
+            // Phase naming evaluation logic
             let phase = 'Base';
-            if (w > appState.settings.phases.base) phase = 'Build';
-            if (w > appState.settings.phases.base + appState.settings.phases.build) phase = 'Peak';
-            if (w > appState.settings.phases.base + appState.settings.phases.build + appState.settings.phases.peak) phase = 'Taper';
+            if (w > plannerState.settings.phases.base) phase = 'Build';
+            if (w > plannerState.settings.phases.base + plannerState.settings.phases.build) phase = 'Peak';
+            if (w > totalW - plannerState.settings.phases.taper) phase = 'Taper';
 
-            // Week Label
-            const label = document.createElement('div');
-            label.className = 'week-label';
-            label.textContent = `Week ${w} - ${phase}`;
-            row.appendChild(label);
+            // Calculate weekly subtotal kilometers live from state array
+            let weekSubtotalKm = 0;
+            const weekDates = [];
+            for(let d=0; d<7; d++) {
+                const targetD = new Date(start);
+                targetD.setDate(start.getDate() + ((w - 1) * 7) + d);
+                weekDates.push(targetD.toISOString().split('T')[0]);
+            }
+            
+            plannerState.workouts.forEach(wk => {
+                if (weekDates.includes(wk.dateStr)) {
+                    weekSubtotalKm += parseFloat(wk.distance || 0);
+                }
+            });
 
-            // Days
+            // Sidebar info box construction
+            const sidebar = document.createElement('div');
+            sidebar.className = 'week-info-sidebar';
+            sidebar.innerHTML = `
+                <div>
+                    <div class="w-meta-title">Week ${w}</div>
+                    <div class="w-meta-phase">${phase}</div>
+                </div>
+                <div class="w-meta-totalkm">${weekSubtotalKm.toFixed(1)} km</div>
+            `;
+            row.appendChild(sidebar);
+
+            // Construct 7 standard sequential day cells
             for (let d = 0; d < 7; d++) {
-                const currentDayDate = new Date(startDate);
-                currentDayDate.setDate(startDate.getDate() + ((w-1)*7) + d);
-                const dateStr = currentDayDate.toISOString().split('T')[0];
+                const dayDate = new Date(start);
+                dayDate.setDate(start.getDate() + ((w - 1) * 7) + d);
+                const dateStr = dayDate.toISOString().split('T')[0];
+
+                const isRaceDay = (w === totalW && d === 6); // Final Sunday flag context
 
                 const cell = document.createElement('div');
-                cell.className = 'day-cell';
+                cell.className = `day-cell ${isRaceDay ? 'race-day-cell' : ''}`;
                 cell.onclick = (e) => {
-                    if(e.target === cell || e.target.classList.contains('day-header')) openModal(null, dateStr);
+                    if (e.target === cell || e.target.classList.contains('cell-date-header')) {
+                        openWorkoutModal(null, dateStr);
+                    }
                 };
 
-                const dayNum = currentDayDate.getDate();
-                const month = currentDayDate.toLocaleString('default', { month: 'short' });
+                const formattedDayNum = dayDate.getDate();
+                const monthLabel = dayDate.toLocaleString('default', { month: 'short' });
                 
-                cell.innerHTML = `<div class="day-header"><span>${month} ${dayNum}</span> <span class="phase-badge">${phase}</span></div>`;
+                cell.innerHTML = `
+                    <div class="cell-date-header">
+                        <span>${monthLabel} ${formattedDayNum}</span>
+                        ${isRaceDay ? '<span class="race-flag">FINISH</span>' : ''}
+                    </div>
+                `;
 
-                // Find workouts
-                const daysWorkouts = appState.workouts.filter(wk => wk.dateStr === dateStr);
-                daysWorkouts.forEach(wk => {
-                    const div = document.createElement('div');
-                    div.className = `workout-item w-${wk.type}`;
-                    div.textContent = `${wk.duration}m ${wk.title}`;
-                    div.onclick = (e) => {
+                // Intersect workouts matching this unique date string
+                const targetedWorkouts = plannerState.workouts.filter(wk => wk.dateStr === dateStr);
+                targetedWorkouts.forEach(wk => {
+                    const badge = document.createElement('div');
+                    badge.className = `workout-badge w-${wk.type}`;
+                    
+                    let secondaryText = wk.type === 'strength' ? `${wk.duration} mins` : `${wk.distance}k @ ${wk.pace || '-'}`;
+                    badge.innerHTML = `
+                        <div class="badge-title" title="${wk.title}">${wk.title}</div>
+                        <div class="badge-metrics"><span>${secondaryText}</span></div>
+                    `;
+                    badge.onclick = (e) => {
                         e.stopPropagation();
-                        openModal(wk.id, dateStr);
+                        openWorkoutModal(wk.id, dateStr);
                     };
-                    cell.appendChild(div);
+                    cell.appendChild(badge);
                 });
 
                 row.appendChild(cell);
@@ -472,179 +653,221 @@
     }
 
     function renderCharts() {
-        // Volume Chart
-        const totalWeeks = parseInt(weeksInput.value);
-        const weeklyVols = new Array(totalWeeks).fill(0);
-        const startDate = new Date(appState.settings.startDate);
+        const totalW = plannerState.settings.totalWeeks;
+        const weeklyKmBins = new Array(totalW).fill(0);
+        const start = new Date(plannerState.settings.startDate + "T00:00:00");
 
-        appState.workouts.forEach(w => {
-            const wDate = new Date(w.dateStr);
-            const diffTime = Math.abs(wDate - startDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-            const weekIdx = Math.floor(diffDays / 7);
-            if (weekIdx >= 0 && weekIdx < totalWeeks) {
-                weeklyVols[weekIdx] += parseInt(w.duration || 0);
+        // Calculate load aggregates
+        const volumeTypesMap = { easy: 0, lsd: 0, tempo: 0, interval: 0, strength: 0 };
+
+        plannerState.workouts.forEach(w => {
+            if (volumeTypesMap[w.type] !== undefined) {
+                volumeTypesMap[w.type] += parseFloat(w.distance || 0);
+            }
+            
+            const wDate = new Date(w.dateStr + "T00:00:00");
+            const diffTime = wDate - start;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const weekIndex = Math.floor(diffDays / 7);
+            
+            if (weekIndex >= 0 && weekIndex < totalW) {
+                weeklyKmBins[weekIndex] += parseFloat(w.distance || 0);
             }
         });
 
-        const maxVol = Math.max(...weeklyVols, 1);
-        const volChart = document.getElementById('volumeChart');
-        volChart.innerHTML = '';
-        weeklyVols.forEach((vol, i) => {
+        // Volume Bar Chart Generation
+        const maxKmValue = Math.max(...weeklyKmBins, 1);
+        const chartWrapper = document.getElementById('volumeChart');
+        chartWrapper.innerHTML = '';
+        
+        weeklyKmBins.forEach((km, i) => {
             const col = document.createElement('div');
-            col.className = 'bar-col';
+            col.className = 'chart-col';
+            
             const bar = document.createElement('div');
-            bar.className = 'bar';
-            bar.style.height = `${(vol / maxVol) * 100}%`;
-            bar.setAttribute('data-val', `${vol}m`);
+            bar.className = 'chart-bar';
+            bar.style.height = `${(km / maxKmValue) * 100}%`;
+            bar.setAttribute('data-val', `${km.toFixed(1)} km`);
+            
             const lbl = document.createElement('div');
-            lbl.className = 'bar-label';
+            lbl.className = 'chart-lbl';
             lbl.textContent = `W${i+1}`;
+            
             col.appendChild(bar);
             col.appendChild(lbl);
-            volChart.appendChild(col);
+            chartWrapper.appendChild(col);
         });
 
-        // Intensity/Type Chart
-        const typeCounts = { swim: 0, bike: 0, run: 0, strength: 0, brick: 0 };
-        appState.workouts.forEach(w => {
-            if (typeCounts[w.type] !== undefined) typeCounts[w.type] += parseInt(w.duration || 0);
-        });
+        // Render List Metric Distribution Overview Report
+        const distReportContainer = document.getElementById('distributionReport');
+        distReportContainer.innerHTML = '';
         
-        const totalMin = Object.values(typeCounts).reduce((a,b) => a+b, 0) || 1;
-        let conicStr = '';
-        let currentDeg = 0;
-        const colors = { swim: '#0ea5e9', bike: '#eab308', run: '#ef4444', strength: '#8b5cf6', brick: '#f97316' };
+        const colorsMap = { easy: '#22c55e', lsd: '#0ea5e9', tempo: '#d97706', interval: '#ef4444', strength: '#8b5cf6' };
+        const labelMap = { easy: 'Easy Recovery', lsd: 'LSD Endurance', tempo: 'Tempo Threshold', interval: 'Interval VO2', strength: 'Strength Cross' };
         
-        Object.entries(typeCounts).forEach(([type, val]) => {
-            const deg = (val / totalMin) * 360;
-            conicStr += `${colors[type]} ${currentDeg}deg ${currentDeg + deg}deg, `;
-            currentDeg += deg;
-        });
+        const totalDistanceSum = Object.values(volumeTypesMap).reduce((a, b) => a + b, 0) || 1;
 
-        document.getElementById('intensityChart').style.background = `conic-gradient(${conicStr.slice(0, -2)})`;
-        
-        // Legend
-        const legend = document.getElementById('intensityLegend');
-        legend.innerHTML = Object.keys(typeCounts).map(t => 
-            `<div class="legend-item"><div class="dot" style="background:${colors[t]}"></div>${t.charAt(0).toUpperCase() + t.slice(1)}</div>`
-        ).join('');
+        Object.entries(volumeTypesMap).forEach(([type, distance]) => {
+            const percentage = ((distance / totalDistanceSum) * 100).toFixed(1);
+            const row = document.createElement('div');
+            row.className = 'dist-item';
+            row.innerHTML = `
+                <div class="dist-label">
+                    <div class="indicator-dot" style="background:${colorsMap[type]}"></div>
+                    <span>${labelMap[type]}</span>
+                </div>
+                <div style="font-weight:700">${distance.toFixed(1)} km (${percentage}%)</div>
+            `;
+            distReportContainer.appendChild(row);
+        });
     }
 
-    // --- Modal & CRUD ---
-    const modal = document.getElementById('workoutModal');
-    
-    function openModal(id, dateStr) {
-        document.getElementById('wDate').value = dateStr;
-        if (id) {
-            const w = appState.workouts.find(x => x.id === id);
-            document.getElementById('wId').value = w.id;
-            document.getElementById('wType').value = w.type;
-            document.getElementById('wTitle').value = w.title;
-            document.getElementById('wDuration').value = w.duration;
-            document.getElementById('wDist').value = w.dist || '';
-            document.getElementById('wInt').value = w.intensity || '';
-            document.getElementById('wNotes').value = w.notes || '';
-            document.getElementById('modalTitle').textContent = "Edit Workout";
-        } else {
-            document.getElementById('wId').value = '';
-            document.getElementById('wType').value = 'run';
-            document.getElementById('wTitle').value = '';
-            document.getElementById('wDuration').value = '';
-            document.getElementById('wDist').value = '';
-            document.getElementById('wInt').value = '';
-            document.getElementById('wNotes').value = '';
-            document.getElementById('modalTitle').textContent = "Add Workout";
+    // --- Modal Window Context Controllers & Form Matching ---
+    const modalMask = document.getElementById('workoutModal');
+
+    function matchFormPaceToType() {
+        const type = document.getElementById('formType').value;
+        if(type === 'strength') {
+            document.getElementById('formPace').value = 'N/A';
+            document.getElementById('formDistance').value = 0;
+            document.getElementById('formIntensity').value = 'RPE 5-6';
+            document.getElementById('formFueling').value = 'None required';
+            return;
         }
-        modal.style.display = 'flex';
+        document.getElementById('formPace').value = getActivePaceStr(type);
+    }
+
+    function openWorkoutModal(id, fallbackDateStr) {
+        document.getElementById('modalDateStr').value = fallbackDateStr;
+        
+        if (id) {
+            const w = plannerState.workouts.find(x => x.id === id);
+            document.getElementById('modalId').value = w.id;
+            document.getElementById('formType').value = w.type;
+            document.getElementById('formTitle').value = w.title;
+            document.getElementById('formDuration').value = w.duration;
+            document.getElementById('formDistance').value = w.distance;
+            document.getElementById('formPace').value = w.pace || '';
+            document.getElementById('formIntensity').value = w.intensity || '';
+            document.getElementById('formFueling').value = w.fueling || '';
+            document.getElementById('formInstructions').value = w.instructions || '';
+            document.getElementById('modalTitle').textContent = "Modify Training Session Entry";
+        } else {
+            document.getElementById('modalId').value = '';
+            document.getElementById('formType').value = 'easy';
+            document.getElementById('formTitle').value = '';
+            document.getElementById('formDuration').value = '';
+            document.getElementById('formDistance').value = '';
+            document.getElementById('formInstructions').value = '';
+            document.getElementById('modalTitle').textContent = "Log New Run Session";
+            matchFormPaceToType();
+        }
+        modalMask.style.display = 'flex';
     }
 
     function closeModal() {
-        modal.style.display = 'none';
+        modalMask.style.display = 'none';
     }
 
-    function saveWorkout(e) {
+    function commitWorkoutSave(e) {
         e.preventDefault();
-        const id = document.getElementById('wId').value;
-        const data = {
-            id: id ? parseFloat(id) : Date.now(),
-            dateStr: document.getElementById('wDate').value,
-            type: document.getElementById('wType').value,
-            title: document.getElementById('wTitle').value,
-            duration: parseInt(document.getElementById('wDuration').value),
-            dist: document.getElementById('wDist').value,
-            intensity: document.getElementById('wInt').value,
-            notes: document.getElementById('wNotes').value
+        const id = document.getElementById('modalId').value;
+        const targetDateStr = document.getElementById('modalDateStr').value;
+
+        const dataRecord = {
+            id: id ? parseFloat(id) : Date.now() + Math.random(),
+            dateStr: targetDateStr,
+            type: document.getElementById('formType').value,
+            title: document.getElementById('formTitle').value,
+            duration: parseInt(document.getElementById('formDuration').value) || 0,
+            distance: parseFloat(document.getElementById('formDistance').value) || 0,
+            pace: document.getElementById('formPace').value,
+            intensity: document.getElementById('formIntensity').value,
+            fueling: document.getElementById('formFueling').value,
+            instructions: document.getElementById('formInstructions').value
         };
 
         if (id) {
-            const idx = appState.workouts.findIndex(x => x.id == id);
-            appState.workouts[idx] = data;
+            const targetIdx = plannerState.workouts.findIndex(x => x.id == id);
+            if (targetIdx !== -1) plannerState.workouts[targetIdx] = dataRecord;
         } else {
-            appState.workouts.push(data);
+            plannerState.workouts.push(dataRecord);
         }
-        saveState();
-        renderAll();
+
+        saveStateToLocalStorage();
+        renderAllViews();
         closeModal();
     }
 
-    function deleteWorkout() {
-        const id = document.getElementById('wId').value;
+    function executeWorkoutDeletion() {
+        const id = document.getElementById('modalId').value;
         if (id) {
-            appState.workouts = appState.workouts.filter(x => x.id != id);
-            saveState();
-            renderAll();
+            plannerState.workouts = plannerState.workouts.filter(x => x.id != id);
+            saveStateToLocalStorage();
+            renderAllViews();
             closeModal();
         }
     }
 
-    // --- Persistence ---
-    function saveState() {
-        localStorage.setItem('triPlannerState', JSON.stringify(appState));
+    // --- State Persistence Layer ---
+    function saveStateToLocalStorage() {
+        localStorage.setItem('marathonPlannerState_v2', JSON.stringify(plannerState));
     }
 
-    function loadState() {
-        const saved = localStorage.getItem('triPlannerState');
-        if (saved) appState = JSON.parse(saved);
+    function loadStateFromLocalStorage() {
+        const payload = localStorage.getItem('marathonPlannerState_v2');
+        if (payload) {
+            try {
+                const parsed = JSON.parse(payload);
+                if (parsed.workouts) plannerState.workouts = parsed.workouts;
+                if (parsed.settings) plannerState.settings = parsed.settings;
+            } catch (err) {
+                console.warn("Storage profile reset required.", err);
+            }
+        }
     }
 
-    // --- ICS Export ---
-    function exportICS() {
-        let icsContent = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//TriPlanner//EN\r\nX-WR-CALNAME:Triathlon Training\r\n";
+    // --- iCalendar (.ICS) Synchronization Engine ---
+    function exportToICSFile() {
+        if(plannerState.workouts.length === 0) {
+            alert("No sessions logged to export yet.");
+            return;
+        }
         
-        appState.workouts.forEach(w => {
-            const date = w.dateStr.replace(/-/g, '');
-            // Simple logic: Workouts start at 6am
-            const start = `${date}T060000`;
-            // End time based on duration
-            const d = new Date(`${w.dateStr}T06:00:00`);
-            d.setMinutes(d.getMinutes() + w.duration);
-            const end = d.toISOString().replace(/[-:]/g, '').split('.')[0];
-
-            const desc = `Type: ${w.type}\nDist: ${w.dist || '-'}\nInt: ${w.intensity || '-'}\nNotes: ${w.notes || ''}`;
+        let icsPayload = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//MarathonPlannerEngine//EN\r\nX-WR-CALNAME:Marathon Training Plan\r\n";
+        
+        plannerState.workouts.forEach(w => {
+            const uniformDate = w.dateStr.replace(/-/g, '');
+            const dtStart = `${uniformDate}T060000`; // Default to early morning running clocks
             
-            icsContent += "BEGIN:VEVENT\r\n";
-            icsContent += `UID:${w.id}@triplanner.local\r\n`;
-            icsContent += `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z\r\n`;
-            icsContent += `DTSTART:${start}\r\n`;
-            icsContent += `DTEND:${end}\r\n`;
-            icsContent += `SUMMARY:${w.title} (${w.duration}m)\r\n`;
-            icsContent += `DESCRIPTION:${desc.replace(/\n/g, '\\n')}\r\n`;
-            icsContent += "END:VEVENT\r\n";
+            // Build simple calendar bounding window duration parameters
+            const endObject = new Date(`${w.dateStr}T06:00:00`);
+            endObject.setMinutes(endObject.getMinutes() + (w.duration || 45));
+            const dtEnd = endObject.toISOString().replace(/[-:]/g, '').split('.')[0];
+
+            const bodyBlock = `Type: ${w.type.toUpperCase()}\nDistance: ${w.distance} km\nPace: ${w.pace}\nIntensity: ${w.intensity}\nFueling Strategy: ${w.fueling}\n\nInstructions: ${w.instructions}`;
+            
+            icsPayload += "BEGIN:VEVENT\r\n";
+            icsPayload += `UID:${w.id}@marathonplanner.engine\r\n`;
+            icsPayload += `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z\r\n`;
+            icsPayload += `DTSTART:${dtStart}\r\n`;
+            icsPayload += `DTEND:${dtEnd}\r\n`;
+            icsPayload += `SUMMARY:[Run] ${w.title} (${w.distance}k)\r\n`;
+            icsPayload += `DESCRIPTION:${bodyBlock.replace(/\n/g, '\\n')}\r\n`;
+            icsPayload += "END:VEVENT\r\n";
         });
 
-        icsContent += "END:VCALENDAR";
+        icsPayload += "END:VCALENDAR";
 
-        const blob = new Blob([icsContent], { type: 'text/calendar' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'training-plan.ics';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        const dynamicBlob = new Blob([icsPayload], { type: 'text/calendar;charset=utf-8' });
+        const downloadUrl = window.URL.createObjectURL(dynamicBlob);
+        const auxiliaryAnchor = document.createElement('a');
+        auxiliaryAnchor.href = downloadUrl;
+        auxiliaryAnchor.download = 'marathon-training-schedule.ics';
+        document.body.appendChild(auxiliaryAnchor);
+        auxiliaryAnchor.click();
+        document.body.removeChild(auxiliaryAnchor);
     }
-
 </script>
 
 </body>
