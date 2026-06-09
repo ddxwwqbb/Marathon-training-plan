@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dedicated Marathon Training Planner</title>
+  <style>
+    :root {
+      --artifact-background: var(--theme-background, #ffffff);
+      --artifact-background-light: var(--theme-background-light, #f7f8fa);
+      --artifact-background-mid: var(--theme-background-mid, #eef1f5);
+      --artifact-surface: var(--theme-background, #ffffff);
+      --artifact-border-light: var(--theme-border-light, #e3e8ef);
+      --artifact-border-dark: var(--theme-border-dark, #c7d0dc);
+      --artifact-primary-brand: var(--theme-primary-brand, #334155);
+      --artifact-primary-highlight: var(--theme-primary-highlight, #0f172a);
+      --artifact-primary-hover: var(--theme-primary-hover, #1e293b);
+      --artifact-selected: var(--theme-selected, #e8eef7);
+      --artifact-text-primary: var(--theme-text-primary, #0f172a);
+      --artifact-text-secondary: var(--theme-text-secondary, #64748b);
+      --artifact-text-inverse: var(--theme-background, #ffffff);
+      --artifact-shadow: rgba(15, 23, 42, 0.08);
+      --artifact-shadow-strong: rgba(15, 23, 42, 0.18);
+
+      --type-easy-bg: #dcfce7;
+      --type-easy-text: #14532d;
+      --type-lsd-bg: #dbeafe;
+      --type-lsd-text: #1e3a8a;
+      --type-tempo-bg: #fef3c7;
+      --type-tempo-text: #92400e;
+      --type-interval-bg: #ffe4e6;
+      --type-interval-text: #9f1239;
+      --type-strength-bg: #f3e8ff;
+      --type-strength-text: #6b21a8;
+      --type-rest-bg: var(--artifact-background-mid);
+      --type-rest-text: var(--artifact-text-secondary);
+
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --spacing: 18px;
+      --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    html[data-theme='dark'] {
+      --artifact-shadow: rgba(0, 0, 0, 0.36);
+      --artifact-shadow-strong: rgba(0, 0, 0, 0.48);
+      --type-easy-bg: #12351f;
+      --type-easy-text: #bbf7d0;
+      --type-lsd-bg: #132a52;
+      --type-lsd-text: #bfdbfe;
+      --type-tempo-bg: #422006;
+      --type-tempo-text: #fde68a;
+      --type-interval-bg: #4c101f;
+      --type-interval-text: #fecdd3;
+      --type-strength-bg: #35164f;
+      --type-strength-text: #e9d5ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--artifact-text-primary);
+      background:
+        radial-gradient(circle at top left, var(--artifact-selected), transparent 34rem),
+        var(--artifact-background-light);
+      min-height: 100vh;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--artifact-selected);
+      outline-offset: 2px;
+    }
+
+    .shell {
+      width: min(1200px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 26px 0 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.7fr);
+      gap: var(--spacing);
+      align-items: stretch;
+      margin-bottom: var(--spacing);
+    }
+
+    .hero-card, .panel, .calendar, .modal-card {
+      background: var(--artifact-surface);
+      color: var(--artifact-text-primary);
+      border: 1px solid var(--artifact-border-light);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 18px 50px var(--artifact-shadow);
+    }
+
+    .hero-card {
+      padding: 28px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      right: -54px;
+      top: -64px;
+      border-radius: 999px;
+      background: var(--artifact-selected);
+      opacity: 0.8;
+    }
+
+    .eyebrow {
+      color: var(--artifact-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.76rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4.25rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      max-width: 780px;
+    }
+
+    .subhead {
+      margin: 18px 0 0;
+      color: var(--artifact-text-secondary);
+      font-size: 1.04rem;
+      line-height: 1.55;
+      max-width: 720px;
+    }
+
+    .race-panel {
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .race-countdown {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      background: var(--artifact-primary-highlight);
+      color: var(--artifact-text-inverse);
+    }
+
+    .race-countdown .value {
+      display: block;
+      font-size: 2.8rem;
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      font-weight: 800;
+    }
+
+    .race-countdown .label {
+      display: block;
+      margin-top: 6px;
+      color: var(--artifact-background-mid);
+      font-size: 0.9rem;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: var(--spacing);
+    }
+
+    .control {
+      display: grid;
+      gap: 7px;
+    }
+
+    .control label, .modal-field label {
+      color: var(--artifact-text-secondary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--artifact-border-light);
+      background: var(--artifact-background);
+      color: var(--artifact-text-primary);
+      border-radius: var(--radius-sm);
+      padding: 11px 12px;
+      min-height: 42px;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .panel-title {
+      margin: 0 0 14px;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .phase-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .pace-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .pace-card {
+      border: 1px solid var(--artifact-border-light);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      background: var(--artifact-background-light);
+      color: var(--artifact-text-primary);
+    }
+
+    .pace-card span {
+      display: block;
+      color: var(--artifact-text-secondary);
+      font-size: 0.76rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .pace-card strong {
+      font-size: 1.3rem;
+      letter-spacing: -0.04em;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: var(--spacing) 0;
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 11px 16px;
+      color: var(--artifact-text-primary);
+      background: var(--artifact-background);
+      border: 1px solid var(--artifact-border-light);
+      font-weight: 700;
+    }
+
+    .btn.primary {
+      background: var(--artifact-primary-highlight);
+      color: var(--artifact-text-inverse);
+      border-color: var(--artifact-primary-highlight);
+      box-shadow: 0 12px 30px var(--artifact-shadow);
+    }
+
+    .btn.danger {
+      background: var(--type-interval-bg);
+      color: var(--type-interval-text);
+      border-color: var(--type-interval-bg);
+    }
+
+    .hint {
+      color: var(--artifact-text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .analytics {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+      gap: var(--spacing);
+      margin-bottom: var(--spacing);
+    }
+
+    .bar-chart {
+      height: 210px;
+      display: flex;
+      align-items: end;
+      gap: 6px;
+      padding: 12px 4px 4px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(to top, var(--artifact-background-mid), transparent);
+      overflow: hidden;
+    }
+
+    .bar-wrap {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      display: grid;
+      align-items: end;
+      gap: 5px;
+    }
+
+    .bar {
+      width: 100%;
+      min-height: 4px;
+      border-radius: 999px 999px 5px 5px;
+      background: var(--artifact-primary-highlight);
+      position: relative;
+    }
+
+    .bar.recovery { background: var(--artifact-border-dark); }
+
+    .bar-label {
+      color: var(--artifact-text-secondary);
+      font-size: 0.67rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .breakdown {
+      display: grid;
+      gap: 9px;
+    }
+
+    .break-row {
+      display: grid;
+      grid-template-columns: 96px 1fr 32px;
+      align-items: center;
+      gap: 9px;
+      color: var(--artifact-text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .track {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--artifact-background-mid);
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--artifact-primary-highlight);
+      width: 0%;
+    }
+
+    .calendar {
+      overflow: hidden;
+    }
+
+    .calendar-header, .week-row {
+      display: grid;
+      grid-template-columns: 180px repeat(7, minmax(0, 1fr));
+    }
+
+    .calendar-header {
+      background: var(--artifact-primary-highlight);
+      color: var(--artifact-text-inverse);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .calendar-header div {
+      padding: 14px 12px;
+      border-right: 1px solid var(--artifact-primary-hover);
+    }
+
+    .week-row {
+      min-height: 132px;
+      border-top: 1px solid var(--artifact-border-light);
+    }
+
+    .week-summary {
+      padding: 14px;
+      background: var(--artifact-background-light);
+      color: var(--artifact-text-primary);
+      border-right: 1px solid var(--artifact-border-light);
+      display: grid;
+      gap: 9px;
+      align-content: start;
+    }
+
+    .week-summary strong {
+      font-size: 1.18rem;
+      letter-spacing: -0.03em;
+    }
+
+    .phase-badge, .type-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      background: var(--artifact-selected);
+      color: var(--artifact-text-primary);
+    }
+
+    .week-km {
+      color: var(--artifact-text-secondary);
+      font-size: 0.86rem;
+    }
+
+    .day-cell {
+      min-height: 132px;
+      padding: 10px;
+      border-right: 1px solid var(--artifact-border-light);
+      background: var(--artifact-surface);
+      color: var(--artifact-text-primary);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 160ms ease;
+    }
+
+    .day-cell:hover {
+      background: var(--artifact-background-light);
+    }
+
+    .date-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: baseline;
+      color: var(--artifact-text-secondary);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .race-cell {
+      background: var(--artifact-primary-highlight);
+      color: var(--artifact-text-inverse);
+    }
+
+    .race-cell .date-line {
+      color: var(--artifact-background-mid);
+    }
+
+    .workouts {
+      display: grid;
+      gap: 7px;
+      align-content: start;
+    }
+
+    .workout-chip {
+      border-radius: 11px;
+      padding: 8px;
+      display: grid;
+      gap: 3px;
+      font-size: 0.79rem;
+      line-height: 1.22;
+      border: 1px solid transparent;
+    }
+
+    .workout-chip strong {
+      font-size: 0.82rem;
+    }
+
+    .workout-chip small {
+      color: inherit;
+      opacity: 0.78;
+    }
+
+    .type-easy { background: var(--type-easy-bg); color: var(--type-easy-text); }
+    .type-lsd { background: var(--type-lsd-bg); color: var(--type-lsd-text); }
+    .type-tempo { background: var(--type-tempo-bg); color: var(--type-tempo-text); }
+    .type-interval { background: var(--type-interval-bg); color: var(--type-interval-text); }
+    .type-strength { background: var(--type-strength-bg); color: var(--type-strength-text); }
+    .type-rest { background: var(--type-rest-bg); color: var(--type-rest-text); }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: var(--artifact-shadow-strong);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 20;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-card {
+      width: min(840px, 100%);
+      max-height: min(92vh, 900px);
+      overflow: auto;
+      padding: 20px;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      letter-spacing: -0.04em;
+    }
+
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: var(--artifact-background-mid);
+      color: var(--artifact-text-primary);
+    }
+
+    .existing-list {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .existing-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--artifact-border-light);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      background: var(--artifact-background-light);
+      color: var(--artifact-text-primary);
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .mini-btn {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--artifact-background);
+      color: var(--artifact-text-primary);
+      border: 1px solid var(--artifact-border-light);
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .modal-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: var(--artifact-primary-highlight);
+      color: var(--artifact-text-inverse);
+      padding: 12px 15px;
+      border-radius: 999px;
+      box-shadow: 0 16px 40px var(--artifact-shadow-strong);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease, transform 200ms ease;
+      z-index: 30;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media screen and (max-width: 980px) {
+      .hero, .analytics {
+        grid-template-columns: 1fr;
+      }
+
+      .controls-grid, .phase-row, .pace-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .calendar-header {
+        display: none;
+      }
+
+      .week-row {
+        grid-template-columns: 1fr;
+        min-height: 0;
+      }
+
+      .week-summary {
+        border-right: 0;
+        border-bottom: 1px solid var(--artifact-border-light);
+      }
+
+      .day-cell {
+        min-height: 104px;
+        border-right: 0;
+        border-bottom: 1px solid var(--artifact-border-light);
+      }
+
+      .date-line::before {
+        content: attr(data-day);
+        color: var(--artifact-text-primary);
+      }
+
+      .race-cell .date-line::before {
+        color: var(--artifact-text-inverse);
+      }
+    }
+
+    @media screen and (max-width: 640px) {
+      .shell {
+        width: min(100vw - 18px, 1200px);
+        padding-top: 12px;
+      }
+
+      .hero-card, .race-panel, .panel {
+        padding: 16px;
+      }
+
+      .controls-grid, .phase-row, .pace-grid, .modal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-row .btn {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    @media print {
+      body {
+        margin: 0;
+        padding: 0.4in 0.6in;
+        background: #fff;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .container, .dashboard, .shell, main {
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+
+      [style*="position:sticky"], [style*="position: sticky"],
+      [class*="topbar"], [class*="navbar"], [class*="header"][class*="sticky"] {
+        position: static !important;
+      }
+
+      section, [class*="section"], .header {
+        break-inside: avoid;
+        margin-bottom: 20px !important;
+      }
+
+      [class*="card"], [class*="Card"] {
+        break-inside: avoid;
+        padding: 18px !important;
+        box-shadow: none !important;
+        border: 1px solid rgba(0,0,0,0.08);
+      }
+
+      [class*="grid"], [class*="row"] {
+        gap: 10px !important;
+        margin-bottom: 20px !important;
+      }
+
+      [class*="chart"], [class*="Chart"] {
+        break-inside: avoid;
+        height: 240px !important;
+      }
+
+      [class*="chart"][class*="tall"], [class*="Chart"][class*="tall"],
+      [class*="chart"][class*="full"], [class*="Chart"][class*="full"] {
+        height: 280px !important;
+      }
+
+      table, thead, .funnel, .heatmap, .list, .goals {
+        break-inside: avoid;
+      }
+
+      [class*="quote-list"], [class*="scroll"],
+      [style*="max-height"], [style*="overflow"] {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      [class*="tab-panel"], [class*="tabpanel"] {
+        display: block !important;
+      }
+
+      [class*="tab-bar"], [class*="tabs"]:not([class*="panel"]) {
+        display: none !important;
+      }
+
+      [class*="fade"], [class*="animate"], [class*="slide"] {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      button, [role="button"], .interactive-only, .modal, .toast {
+        display: none !important;
+      }
+
+      .calendar-header, .week-row {
+        grid-template-columns: 150px repeat(7, 1fr);
+      }
+
+      .day-cell {
+        min-height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">Marathon macrocycle planner</div>
+        <h1>Build the race backward. Execute the week forward.</h1>
+        <p class="subhead">A timezone-safe training dashboard that anchors the race on Sunday, calculates Week 1 from the correct Monday, models progressive volume with recovery weeks, and converts goal time into tactical pacing bands.</p>
+      </div>
+
+      <aside class="race-panel">
+        <div class="race-countdown">
+          <span class="value" id="daysToRace">—</span>
+          <span class="label" id="raceLabel">days to race day</span>
+        </div>
+        <div class="hint" id="boundaryHint">Race date automatically rolls forward to the nearest Sunday when needed.</div>
+      </aside>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Plan setup</h2>
+      <div class="controls-grid">
+        <div class="control">
+          <label for="raceDate">Target race date</label>
+          <input id="raceDate" type="date" />
+        </div>
+        <div class="control">
+          <label for="planWeeks">Plan length</label>
+          <select id="planWeeks">
+            <option value="12">12 weeks</option>
+            <option value="16">16 weeks</option>
+            <option value="18" selected>18 weeks</option>
+            <option value="20">20 weeks</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="targetTime">Target finish time</label>
+          <input id="targetTime" value="03:30:00" inputmode="numeric" placeholder="HH:MM:SS" />
+        </div>
+        <div class="control">
+          <label for="peakVolume">Peak weekly volume km</label>
+          <input id="peakVolume" type="number" min="35" max="180" value="82" />
+        </div>
+      </div>
+
+      <div class="phase-row">
+        <div class="control">
+          <label for="baseWeeks">Base weeks</label>
+          <input id="baseWeeks" type="number" min="1" value="6" />
+        </div>
+        <div class="control">
+          <label for="buildWeeks">Build weeks</label>
+          <input id="buildWeeks" type="number" min="1" value="5" />
+        </div>
+        <div class="control">
+          <label for="peakWeeks">Peak weeks</label>
+          <input id="peakWeeks" type="number" min="1" value="4" />
+        </div>
+        <div class="control">
+          <label for="taperWeeks">Taper weeks</label>
+          <input id="taperWeeks" type="number" min="1" value="3" />
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn primary" id="generateBtn">Generate progressive plan</button>
+        <button class="btn" id="balanceBtn">Auto-balance phases</button>
+        <button class="btn" id="exportBtn">Export workouts to ICS</button>
+        <span class="hint" id="phaseHint">Phase total must match the selected plan length.</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Dynamic pacing engine</h2>
+      <div class="pace-grid">
+        <div class="pace-card">
+          <span>Race pace</span>
+          <strong id="racePace">—</strong>
+        </div>
+        <div class="control">
+          <label for="easyOverride">Easy / recovery</label>
+          <input id="easyOverride" placeholder="Auto" />
+        </div>
+        <div class="control">
+          <label for="lsdOverride">LSD</label>
+          <input id="lsdOverride" placeholder="Auto" />
+        </div>
+        <div class="control">
+          <label for="tempoOverride">Tempo / threshold</label>
+          <input id="tempoOverride" placeholder="Auto" />
+        </div>
+        <div class="control">
+          <label for="intervalOverride">Interval / VO₂</label>
+          <input id="intervalOverride" placeholder="Auto" />
+        </div>
+      </div>
+      <div class="pace-grid" style="margin-top:10px">
+        <div class="pace-card type-easy">
+          <span>Easy</span>
+          <strong id="easyPace">—</strong>
+        </div>
+        <div class="pace-card type-lsd">
+          <span>LSD</span>
+          <strong id="lsdPace">—</strong>
+        </div>
+        <div class="pace-card type-tempo">
+          <span>Tempo</span>
+          <strong id="tempoPace">—</strong>
+        </div>
+        <div class="pace-card type-interval">
+          <span>Interval</span>
+          <strong id="intervalPace">—</strong>
+        </div>
+        <div class="pace-card type-strength">
+          <span>Strength</span>
+          <strong>RPE-led</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="analytics">
+      <div class="panel">
+        <h2 class="panel-title">Weekly volume curve</h2>
+        <div class="bar-chart" id="volumeChart" aria-label="Weekly volume bar chart"></div>
+      </div>
+      <div class="panel">
+        <h2 class="panel-title">Workout category breakdown</h2>
+        <div class="breakdown" id="typeBreakdown"></div>
+      </div>
+    </section>
+
+    <section class="calendar" aria-label="Training calendar">
+      <div class="calendar-header">
+        <div>Week</div>
+        <div>Monday</div>
+        <div>Tuesday</div>
+        <div>Wednesday</div>
+        <div>Thursday</div>
+        <div>Friday</div>
+        <div>Saturday</div>
+        <div>Sunday</div>
+      </div>
+      <div id="calendarBody"></div>
+    </section>
+  </main>
+
+  <div class="modal" id="workoutModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <div>
+          <h2 id="modalTitle">Workout</h2>
+          <p class="hint" id="modalDate" style="margin:6px 0 0"></p>
+        </div>
+        <button class="close-btn" id="closeModal" aria-label="Close">×</button>
+      </div>
+
+      <div class="existing-list" id="existingList"></div>
+
+      <form id="workoutForm">
+        <input type="hidden" id="workoutId" />
+        <div class="modal-grid">
+          <div class="modal-field">
+            <label for="workoutTitle">Title</label>
+            <input id="workoutTitle" required placeholder="e.g., Aerobic long run" />
+          </div>
+          <div class="modal-field">
+            <label for="workoutType">Type</label>
+            <select id="workoutType">
+              <option>Easy</option>
+              <option>LSD</option>
+              <option>Tempo</option>
+              <option>Interval</option>
+              <option>Strength</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label for="workoutDuration">Duration</label>
+            <input id="workoutDuration" placeholder="e.g., 75 min" />
+          </div>
+          <div class="modal-field">
+            <label for="workoutDistance">Distance km</label>
+            <input id="workoutDistance" type="number" min="0" step="0.1" placeholder="0.0" />
+          </div>
+          <div class="modal-field">
+            <label for="workoutIntensity">Intensity profile</label>
+            <input id="workoutIntensity" placeholder="RPE 4 / HR Zone 2" />
+          </div>
+          <div class="modal-field">
+            <label for="workoutFueling">Fueling strategy</label>
+            <input id="workoutFueling" placeholder="60g carbs/hr + 500ml fluid/hr" />
+          </div>
+          <div class="modal-field full">
+            <label for="workoutDetails">Detailed execution instructions</label>
+            <textarea id="workoutDetails" placeholder="Warm-up, main set, cues, cool-down, recovery notes"></textarea>
+          </div>
+        </div>
+        <div class="action-row">
+          <button type="submit" class="btn primary">Save workout</button>
+          <button type="button" class="btn" id="newWorkoutBtn">New workout</button>
+          <button type="button" class="btn danger" id="deleteWorkoutBtn">Delete selected</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <script>
+    const MS_DAY = 24 * 60 * 60 * 1000;
+    const marathonKm = 42.195;
+    const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const typeClass = { Easy: "type-easy", LSD: "type-lsd", Tempo: "type-tempo", Interval: "type-interval", Strength: "type-strength" };
+
+    const state = {
+      raceDate: null,
+      adjustedRaceDate: null,
+      startDate: null,
+      weeks: [],
+      workouts: [],
+      activeDateKey: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function parseLocalDate(dateString) {
+      if (!dateString || !dateString.includes("-")) return null;
+      const parts = dateString.split("-");
+      const year = Number(parts[0]);
+      const month = Number(parts[1]);
+      const day = Number(parts[2]);
+      if (!year || !month || !day) return null;
+      return new Date(year, month - 1, day, 0, 0, 0, 0);
+    }
+
+    function dateKey(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function cloneDate(date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+    }
+
+    function addDays(date, days) {
+      const next = cloneDate(date);
+      next.setDate(next.getDate() + days);
+      return next;
+    }
+
+    function daysBetween(a, b) {
+      const start = new Date(a.getFullYear(), a.getMonth(), a.getDate(), 0, 0, 0, 0);
+      const end = new Date(b.getFullYear(), b.getMonth(), b.getDate(), 0, 0, 0, 0);
+      return Math.round((end - start) / MS_DAY);
+    }
+
+    function formatDate(date) {
+      return `${shortMonths[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+    }
+
+    function adjustForwardToSunday(date) {
+      const local = cloneDate(date);
+      const day = local.getDay();
+      const offset = day === 0 ? 0 : 7 - day;
+      return addDays(local, offset);
+    }
+
+    function parseTimeToSeconds(value) {
+      const parts = String(value || "").trim().split(":").map(Number);
+      if (parts.length !== 3 || parts.some((n) => Number.isNaN(n) || n < 0)) return null;
+      return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    }
+
+    function paceToSeconds(value) {
+      const parts = String(value || "").trim().split(":").map(Number);
+      if (parts.length === 2 && parts.every((n) => !Number.isNaN(n) && n >= 0)) return parts[0] * 60 + parts[1];
+      if (parts.length === 3 && parts.every((n) => !Number.isNaN(n) && n >= 0)) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+      return null;
+    }
+
+    function secondsToPace(seconds) {
+      if (!Number.isFinite(seconds) || seconds <= 0) return "—";
+      const rounded = Math.round(seconds);
+      const min = Math.floor(rounded / 60);
+      const sec = String(rounded % 60).padStart(2, "0");
+      return `${min}:${sec}/km`;
+    }
+
+    function getPaces() {
+      const targetSeconds = parseTimeToSeconds($("targetTime").value);
+      const race = targetSeconds ? targetSeconds / marathonKm : null;
+      const calculated = {
+        Race: race,
+        Easy: race ? race + 75 : null,
+        LSD: race ? race + 50 : null,
+        Tempo: race ? race - 20 : null,
+        Interval: race ? race - 45 : null
+      };
+
+      const overrides = {
+        Easy: paceToSeconds($("easyOverride").value),
+        LSD: paceToSeconds($("lsdOverride").value),
+        Tempo: paceToSeconds($("tempoOverride").value),
+        Interval: paceToSeconds($("intervalOverride").value)
+      };
+
+      return {
+        Race: calculated.Race,
+        Easy: overrides.Easy || calculated.Easy,
+        LSD: overrides.LSD || calculated.LSD,
+        Tempo: overrides.Tempo || calculated.Tempo,
+        Interval: overrides.Interval || calculated.Interval
+      };
+    }
+
+    function updatePaceCards() {
+      const p = getPaces();
+      $("racePace").textContent = secondsToPace(p.Race);
+      $("easyPace").textContent = secondsToPace(p.Easy);
+      $("lsdPace").textContent = secondsToPace(p.LSD);
+      $("tempoPace").textContent = secondsToPace(p.Tempo);
+      $("intervalPace").textContent = secondsToPace(p.Interval);
+    }
+
+    function phaseForWeek(index) {
+      const base = Number($("baseWeeks").value);
+      const build = Number($("buildWeeks").value);
+      const peak = Number($("peakWeeks").value);
+      if (index <= base) return "Base";
+      if (index <= base + build) return "Build";
+      if (index <= base + build + peak) return "Peak";
+      return "Taper";
+    }
+
+    function totalPhaseWeeks() {
+      return ["baseWeeks", "buildWeeks", "peakWeeks", "taperWeeks"].reduce((sum, id) => sum + Number($(id).value || 0), 0);
+    }
+
+    function validatePhases() {
+      const planWeeks = Number($("planWeeks").value);
+      const total = totalPhaseWeeks();
+      const ok = total === planWeeks;
+      $("phaseHint").textContent = ok
+        ? `Phase total is locked at ${total} weeks.`
+        : `Phase total is ${total}; adjust to match ${planWeeks} weeks before generating.`;
+      $("phaseHint").style.fontWeight = ok ? "500" : "800";
+      return ok;
+    }
+
+    function autoBalancePhases() {
+      const weeks = Number($("planWeeks").value);
+      const taper = weeks <= 12 ? 2 : 3;
+      const peak = weeks >= 18 ? 4 : 3;
+      const build = Math.max(3, Math.round((weeks - taper - peak) * 0.45));
+      const base = weeks - taper - peak - build;
+      $("baseWeeks").value = base;
+      $("buildWeeks").value = build;
+      $("peakWeeks").value = peak;
+      $("taperWeeks").value = taper;
+      validatePhases();
+    }
+
+    function computeVolumeCurve(weeks, peakVolume) {
+      const raw = [];
+      let rolling = peakVolume / Math.pow(1.03, weeks - 1);
+      for (let i = 1; i <= weeks; i++) {
+        let volume = rolling;
+        if (i % 4 === 0 && i !== weeks) volume = raw[i - 2] * 0.7;
+        if (phaseForWeek(i) === "Taper") {
+          const taperIndex = i - (weeks - Number($("taperWeeks").value));
+          const taperMultipliers = [0.72, 0.52, 0.32, 0.22];
+          volume = peakVolume * (taperMultipliers[taperIndex - 1] || 0.22);
+        }
+        raw.push(Math.max(18, Math.round(volume)));
+        rolling = Math.min(peakVolume, rolling * 1.03);
+      }
+
+      const maxBeforeTaper = weeks - Number($("taperWeeks").value);
+      let max = 0;
+      for (let i = 0; i < maxBeforeTaper; i++) max = Math.max(max, raw[i]);
+      if (max > 0) {
+        const factor = peakVolume / max;
+        for (let i = 0; i < maxBeforeTaper; i++) raw[i] = Math.round(raw[i] * factor);
+      }
+      return raw;
+    }
+
+    function createWorkout(date, title, type, duration, distance, intensity, fueling, details) {
+      return {
+        id: cryptoRandomId(),
+        dateKey: dateKey(date),
+        title,
+        type,
+        duration,
+        distance: Number(distance || 0),
+        intensity,
+        fueling,
+        details
+      };
+    }
+
+    function cryptoRandomId() {
+      if (window.crypto && crypto.getRandomValues) {
+        const arr = new Uint32Array(2);
+        crypto.getRandomValues(arr);
+        return `w${arr[0].toString(16)}${arr[1].toString(16)}`;
+      }
+      return `w${Date.now()}${Math.random().toString(16).slice(2)}`;
+    }
+
+    function generateWeekWorkouts(week, phase, weekVolume, paces) {
+      const monday = week.days[0];
+      const tuesday = week.days[1];
+      const wednesday = week.days[2];
+      const thursday = week.days[3];
+      const friday = week.days[4];
+      const saturday = week.days[5];
+      const sunday = week.days[6];
+
+      if (week.isRaceWeek) {
+        const raceDistance = 42.195;
+        return [
+          createWorkout(monday, "Easy taper run", "Easy", "35 min", 6, "RPE 3–4 / HR Zone 2", "Normal hydration; no aggressive carb load yet", `Keep legs fresh. Run relaxed at ${secondsToPace(paces.Easy)} and finish with 4 × 15 sec strides.`),
+          createWorkout(wednesday, "Race-pace sharpening", "Tempo", "40 min", 8, "RPE 6 with short race-pace touches", "Start carbohydrate emphasis after this session", `Warm up 15 min, then 3 × 1 km near marathon race pace (${secondsToPace(paces.Race)}) with easy jog recoveries. Stop while feeling sharp.`),
+          createWorkout(friday, "Pre-race shakeout", "Easy", "20 min", 4, "RPE 2–3 / very relaxed", "Sip electrolytes; avoid over-drinking", "Short shakeout only. Include mobility after the run and keep the rest of the day easy."),
+          createWorkout(sunday, "Race Day — Marathon", "LSD", "Race", raceDistance, "Controlled start, steady middle, committed final 10 km", "60–90g carbs/hr + 500–750ml fluid/hr based on conditions", `Target race pace is ${secondsToPace(paces.Race)}. Open conservatively for 5 km, lock into rhythm through 32 km, then race by effort.`)
+        ];
+      }
+
+      const longRun = Math.max(12, Math.round(weekVolume * (phase === "Peak" ? 0.38 : 0.34)));
+      const quality = phase === "Base" ? "Easy" : phase === "Build" ? "Tempo" : "Interval";
+      const qualityDistance = Math.max(7, Math.round(weekVolume * (phase === "Peak" ? 0.18 : 0.15)));
+      const easyA = Math.max(6, Math.round(weekVolume * 0.16));
+      const easyB = Math.max(5, Math.round(weekVolume * 0.13));
+      const recovery = Math.max(4, Math.round(weekVolume - longRun - qualityDistance - easyA - easyB));
+
+      const workouts = [
+        createWorkout(tuesday, phase === "Base" ? "Aerobic durability run" : quality === "Tempo" ? "Threshold development" : "VO₂ max interval set", quality, `${Math.round(qualityDistance * 5.5)} min`, qualityDistance, quality === "Interval" ? "RPE 8–9 / HR Zone 5 repeats" : quality === "Tempo" ? "RPE 7 / upper Zone 3–4" : "RPE 4 / Zone 2", quality === "Interval" ? "30–45g carbs before; water during" : "Light carbs if early morning; hydrate normally", quality === "Interval" ? `Warm up 20 min. Main set: 5–7 × 1 km around ${secondsToPace(paces.Interval)} with equal jog recovery. Cool down fully.` : quality === "Tempo" ? `Warm up 15 min. Run 3 × 10 min around ${secondsToPace(paces.Tempo)} with 3 min jog. Stay smooth, not strained.` : `Run easy at ${secondsToPace(paces.Easy)}. Add 6 × 20 sec strides on flat ground.`),
+        createWorkout(wednesday, "Easy aerobic run", "Easy", `${Math.round(easyA * 6)} min`, easyA, "RPE 3–4 / HR Zone 2", "Hydrate to thirst", `Stay conversational at ${secondsToPace(paces.Easy)}. Keep cadence light and finish feeling better than at the start.`),
+        createWorkout(thursday, "Strength and mobility", "Strength", "40 min", 0, "RPE 6 / controlled lifting", "Protein-focused recovery meal", "Single-leg strength, posterior chain, calf capacity, trunk stability, and 10 min mobility. Avoid soreness before long run."),
+        createWorkout(friday, "Recovery run", "Easy", `${Math.round(recovery * 6.2)} min`, recovery, "RPE 2–3 / low Zone 2", "Optional electrolytes", `Recovery-first. Run slower than ${secondsToPace(paces.Easy)} if fatigue is present.`),
+        createWorkout(saturday, phase === "Peak" ? "Marathon-specific long run" : "Long slow distance", "LSD", `${Math.round(longRun * 5.8)} min`, longRun, "RPE 4–6 / Zone 2 with controlled finish", "60–80g carbs/hr + 500–750ml fluid/hr", phase === "Peak" ? `Run mostly at ${secondsToPace(paces.LSD)} with the final 6–10 km near race pace if controlled.` : `Keep the whole run steady at ${secondsToPace(paces.LSD)}. Practice fueling from the first 30 minutes.`)
+      ];
+
+      if (phase !== "Base") {
+        workouts.push(createWorkout(monday, "Regeneration jog", "Easy", `${Math.round(easyB * 6.4)} min`, easyB, "RPE 2–3 / soft surface if possible", "Normal hydration", "Very easy circulation run. Skip if recovery markers are poor."));
+      }
+
+      return workouts;
+    }
+
+    function buildPlan() {
+      if (!validatePhases()) {
+        showToast("Phase total must match plan length");
+        return;
+      }
+
+      updatePaceCards();
+
+      const selectedRace = parseLocalDate($("raceDate").value);
+      if (!selectedRace) {
+        showToast("Choose a valid race date");
+        return;
+      }
+
+      const adjusted = adjustForwardToSunday(selectedRace);
+      const weeksCount = Number($("planWeeks").value);
+      const startDate = addDays(adjusted, -((weeksCount * 7) - 1));
+      const peakVolume = Number($("peakVolume").value || 80);
+      const volumes = computeVolumeCurve(weeksCount, peakVolume);
+      const paces = getPaces();
+
+      state.raceDate = selectedRace;
+      state.adjustedRaceDate = adjusted;
+      state.startDate = startDate;
+      state.weeks = [];
+      state.workouts = [];
+
+      for (let i = 1; i <= weeksCount; i++) {
+        const monday = addDays(startDate, (i - 1) * 7);
+        const days = Array.from({ length: 7 }, (_, dayIndex) => addDays(monday, dayIndex));
+        const phase = phaseForWeek(i);
+        const week = {
+          number: i,
+          phase,
+          days,
+          plannedVolume: volumes[i - 1],
+          isRaceWeek: i === weeksCount
+        };
+        state.weeks.push(week);
+        state.workouts.push(...generateWeekWorkouts(week, phase, volumes[i - 1], paces));
+      }
+
+      renderAll();
+      showToast("Progressive plan generated");
+    }
+
+    function getWeeklyTotal(week) {
+      const keys = new Set(week.days.map(dateKey));
+      return state.workouts
+        .filter((w) => keys.has(w.dateKey))
+        .reduce((sum, w) => sum + Number(w.distance || 0), 0);
+    }
+
+    function renderCalendar() {
+      const body = $("calendarBody");
+      body.innerHTML = "";
+      state.weeks.forEach((week) => {
+        const row = document.createElement("div");
+        row.className = "week-row";
+
+        const summary = document.createElement("div");
+        summary.className = "week-summary";
+        summary.innerHTML = `
+          <strong>Week ${week.number}</strong>
+          <span class="phase-badge">${week.phase}</span>
+          <span class="week-km">${getWeeklyTotal(week).toFixed(1)} km scheduled</span>
+        `;
+        row.appendChild(summary);
+
+        week.days.forEach((day, idx) => {
+          const key = dateKey(day);
+          const cell = document.createElement("button");
+          cell.type = "button";
+          cell.className = "day-cell";
+          if (key === dateKey(state.adjustedRaceDate)) cell.classList.add("race-cell");
+
+          const dateLine = document.createElement("div");
+          dateLine.className = "date-line";
+          dateLine.setAttribute("data-day", dayNames[idx]);
+          dateLine.innerHTML = `<span>${shortMonths[day.getMonth()]} ${day.getDate()}</span><span>${key === dateKey(state.adjustedRaceDate) ? "Race" : ""}</span>`;
+
+          const workouts = document.createElement("div");
+          workouts.className = "workouts";
+
+          state.workouts.filter((w) => w.dateKey === key).forEach((w) => {
+            const chip = document.createElement("div");
+            chip.className = `workout-chip ${typeClass[w.type] || "type-rest"}`;
+            chip.innerHTML = `<strong>${escapeHtml(w.title)}</strong><small>${escapeHtml(w.type)} · ${Number(w.distance || 0).toFixed(1)} km · ${escapeHtml(w.duration || "")}</small>`;
+            workouts.appendChild(chip);
+          });
+
+          cell.append(dateLine, workouts);
+          cell.addEventListener("click", () => openModal(key));
+          row.appendChild(cell);
+        });
+
+        body.appendChild(row);
+      });
+    }
+
+    function renderAnalytics() {
+      const chart = $("volumeChart");
+      chart.innerHTML = "";
+      const totals = state.weeks.map(getWeeklyTotal);
+      const max = Math.max(1, ...totals);
+
+      state.weeks.forEach((week, idx) => {
+        const total = totals[idx];
+        const wrap = document.createElement("div");
+        wrap.className = "bar-wrap";
+        wrap.title = `Week ${week.number}: ${total.toFixed(1)} km`;
+        const bar = document.createElement("div");
+        bar.className = `bar ${week.number % 4 === 0 && !week.isRaceWeek ? "recovery" : ""}`;
+        bar.style.height = `${Math.max(4, (total / max) * 100)}%`;
+        const label = document.createElement("div");
+        label.className = "bar-label";
+        label.textContent = week.number;
+        wrap.append(bar, label);
+        chart.appendChild(wrap);
+      });
+
+      const types = ["Easy", "LSD", "Tempo", "Interval", "Strength"];
+      const counts = Object.fromEntries(types.map((type) => [type, 0]));
+      state.workouts.forEach((w) => {
+        if (counts[w.type] !== undefined) counts[w.type] += 1;
+      });
+      const maxCount = Math.max(1, ...Object.values(counts));
+      const breakdown = $("typeBreakdown");
+      breakdown.innerHTML = "";
+      types.forEach((type) => {
+        const row = document.createElement("div");
+        row.className = "break-row";
+        row.innerHTML = `
+          <span class="type-badge ${typeClass[type]}">${type}</span>
+          <span class="track"><span class="fill ${typeClass[type]}" style="width:${(counts[type] / maxCount) * 100}%"></span></span>
+          <strong>${counts[type]}</strong>
+        `;
+        breakdown.appendChild(row);
+      });
+    }
+
+    function renderRaceSummary() {
+      if (!state.adjustedRaceDate) return;
+      const today = new Date();
+      const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+      const days = Math.max(0, daysBetween(localToday, state.adjustedRaceDate));
+      $("daysToRace").textContent = days;
+      $("raceLabel").textContent = `days to ${formatDate(state.adjustedRaceDate)}`;
+      const original = dateKey(state.raceDate);
+      const adjusted = dateKey(state.adjustedRaceDate);
+      $("boundaryHint").textContent = original === adjusted
+        ? `Race day is Sunday. Week 1 starts Monday, ${formatDate(state.startDate)}.`
+        : `Selected date moved from ${formatDate(state.raceDate)} to nearest Sunday: ${formatDate(state.adjustedRaceDate)}. Week 1 starts Monday, ${formatDate(state.startDate)}.`;
+    }
+
+    function renderAll() {
+      updatePaceCards();
+      renderRaceSummary();
+      renderCalendar();
+      renderAnalytics();
+    }
+
+    function openModal(key) {
+      state.activeDateKey = key;
+      const date = parseLocalDate(key);
+      $("modalTitle").textContent = "Manage workout";
+      $("modalDate").textContent = formatDate(date);
+      resetForm();
+      renderExistingList();
+      $("workoutModal").classList.add("open");
+      $("workoutModal").setAttribute("aria-hidden", "false");
+      $("workoutTitle").focus();
+    }
+
+    function closeModal() {
+      $("workoutModal").classList.remove("open");
+      $("workoutModal").setAttribute("aria-hidden", "true");
+    }
+
+    function resetForm() {
+      $("workoutId").value = "";
+      $("workoutTitle").value = "";
+      $("workoutType").value = "Easy";
+      $("workoutDuration").value = "";
+      $("workoutDistance").value = "";
+      $("workoutIntensity").value = "";
+      $("workoutFueling").value = "";
+      $("workoutDetails").value = "";
+      $("deleteWorkoutBtn").disabled = true;
+    }
+
+    function renderExistingList() {
+      const list = $("existingList");
+      list.innerHTML = "";
+      const workouts = state.workouts.filter((w) => w.dateKey === state.activeDateKey);
+      if (!workouts.length) {
+        list.innerHTML = `<p class="hint" style="margin:0">No workouts scheduled for this day yet.</p>`;
+        return;
+      }
+
+      workouts.forEach((w) => {
+        const item = document.createElement("div");
+        item.className = "existing-item";
+        item.innerHTML = `
+          <div>
+            <span class="type-badge ${typeClass[w.type]}">${escapeHtml(w.type)}</span>
+            <strong style="display:block;margin-top:6px">${escapeHtml(w.title)}</strong>
+            <span class="hint">${Number(w.distance || 0).toFixed(1)} km · ${escapeHtml(w.duration || "")}</span>
+          </div>
+          <div class="item-actions">
+            <button type="button" class="mini-btn" data-edit="${w.id}">Edit</button>
+            <button type="button" class="mini-btn" data-delete="${w.id}">Delete</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+
+      list.querySelectorAll("[data-edit]").forEach((btn) => btn.addEventListener("click", () => loadWorkout(btn.dataset.edit)));
+      list.querySelectorAll("[data-delete]").forEach((btn) => btn.addEventListener("click", () => deleteWorkout(btn.dataset.delete)));
+    }
+
+    function loadWorkout(id) {
+      const w = state.workouts.find((item) => item.id === id);
+      if (!w) return;
+      $("workoutId").value = w.id;
+      $("workoutTitle").value = w.title;
+      $("workoutType").value = w.type;
+      $("workoutDuration").value = w.duration;
+      $("workoutDistance").value = w.distance;
+      $("workoutIntensity").value = w.intensity;
+      $("workoutFueling").value = w.fueling;
+      $("workoutDetails").value = w.details;
+      $("deleteWorkoutBtn").disabled = false;
+    }
+
+    function saveWorkout(event) {
+      event.preventDefault();
+      const id = $("workoutId").value || cryptoRandomId();
+      const payload = {
+        id,
+        dateKey: state.activeDateKey,
+        title: $("workoutTitle").value.trim(),
+        type: $("workoutType").value,
+        duration: $("workoutDuration").value.trim(),
+        distance: Number($("workoutDistance").value || 0),
+        intensity: $("workoutIntensity").value.trim(),
+        fueling: $("workoutFueling").value.trim(),
+        details: $("workoutDetails").value.trim()
+      };
+
+      const idx = state.workouts.findIndex((w) => w.id === id);
+      if (idx >= 0) state.workouts[idx] = payload;
+      else state.workouts.push(payload);
+
+      resetForm();
+      renderExistingList();
+      renderCalendar();
+      renderAnalytics();
+      showToast("Workout saved");
+    }
+
+    function deleteWorkout(id) {
+      const targetId = id || $("workoutId").value;
+      if (!targetId) return;
+      state.workouts = state.workouts.filter((w) => w.id !== targetId);
+      resetForm();
+      renderExistingList();
+      renderCalendar();
+      renderAnalytics();
+      showToast("Workout deleted");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[ch]));
+    }
+
+    function escapeIcs(value) {
+      return String(value ?? "")
+        .replace(/\\/g, "\\\\")
+        .replace(/;/g, "\\;")
+        .replace(/,/g, "\\,")
+        .replace(/\r?\n/g, "\\n");
+    }
+
+    function icsDate(dateKeyValue) {
+      return dateKeyValue.replaceAll("-", "");
+    }
+
+    function foldIcsLine(line) {
+      const limit = 74;
+      let output = "";
+      let current = line;
+      while (current.length > limit) {
+        output += current.slice(0, limit) + "\r\n ";
+        current = current.slice(limit);
+      }
+      return output + current;
+    }
+
+    function exportIcs() {
+      if (!state.workouts.length) {
+        showToast("No workouts to export");
+        return;
+      }
+
+      const stamp = new Date();
+      const stampText = stamp.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+      const lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Dedicated Marathon Training Planner//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH"
+      ];
+
+      state.workouts.forEach((w) => {
+        const description = [
+          `Type: ${w.type}`,
+          `Distance: ${Number(w.distance || 0).toFixed(1)} km`,
+          `Duration: ${w.duration || "Not specified"}`,
+          `Intensity: ${w.intensity || "Not specified"}`,
+          `Fueling: ${w.fueling || "Not specified"}`,
+          "",
+          w.details || ""
+        ].join("\n");
+
+        lines.push(
+          "BEGIN:VEVENT",
+          `UID:${escapeIcs(w.id)}@marathon-training-planner`,
+          `DTSTAMP:${stampText}`,
+          `DTSTART;VALUE=DATE:${icsDate(w.dateKey)}`,
+          `DTEND;VALUE=DATE:${icsDate(dateKey(addDays(parseLocalDate(w.dateKey), 1)))}`,
+          `SUMMARY:${escapeIcs(w.title)}`,
+          `CATEGORIES:${escapeIcs(w.type)}`,
+          `DESCRIPTION:${escapeIcs(description)}`,
+          "END:VEVENT"
+        );
+      });
+
+      lines.push("END:VCALENDAR");
+      const ics = lines.map(foldIcsLine).join("\r\n");
+      const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `marathon-plan-${dateKey(state.adjustedRaceDate || new Date())}.ics`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("ICS calendar exported");
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2100);
+    }
+
+    function setDefaultRaceDate() {
+      const today = new Date();
+      const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+      const future = addDays(localToday, 18 * 7);
+      const sunday = adjustForwardToSunday(future);
+      $("raceDate").value = dateKey(sunday);
+    }
+
+    function bindEvents() {
+      ["targetTime", "easyOverride", "lsdOverride", "tempoOverride", "intervalOverride"].forEach((id) => {
+        $(id).addEventListener("input", updatePaceCards);
+      });
+
+      ["baseWeeks", "buildWeeks", "peakWeeks", "taperWeeks", "planWeeks"].forEach((id) => {
+        $(id).addEventListener("input", validatePhases);
+        $(id).addEventListener("change", validatePhases);
+      });
+
+      $("planWeeks").addEventListener("change", autoBalancePhases);
+      $("balanceBtn").addEventListener("click", autoBalancePhases);
+      $("generateBtn").addEventListener("click", buildPlan);
+      $("exportBtn").addEventListener("click", exportIcs);
+      $("closeModal").addEventListener("click", closeModal);
+      $("newWorkoutBtn").addEventListener("click", resetForm);
+      $("deleteWorkoutBtn").addEventListener("click", () => deleteWorkout());
+      $("workoutForm").addEventListener("submit", saveWorkout);
+
+      $("workoutModal").addEventListener("click", (event) => {
+        if (event.target === $("workoutModal")) closeModal();
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeModal();
+      });
+    }
+
+    setDefaultRaceDate();
+    bindEvents();
+    validatePhases();
+    buildPlan();
+
+    if (window.GleanBridge && typeof window.GleanBridge.postMessage === "function") {
+      window.GleanBridge.postMessage({
+        actionId: "export-pdf",
+        type: "glean-add-menu",
+        metadata: { label: "Export as PDF", icon: "export" }
+      });
+      window.GleanBridge.onMessage("action", function(data) {
+        if (data.actionId === "export-pdf") window.print();
+      });
+    }
+
+    function prepareChartsForPrint() {
+      document.querySelectorAll("[_echarts_instance_]").forEach(function(el) {
+        if (!window.echarts) return;
+        var chart = echarts.getInstanceByDom(el);
+        if (!chart) return;
+        var img = new Image();
+        img.src = chart.getDataURL({ type: "png", pixelRatio: 2 });
+        img.className = "print-chart-img";
+        img.style.cssText =
+          "width:100%;height:100%;object-fit:contain;" +
+          "position:absolute;top:0;left:0;z-index:10;";
+        el.dataset.prevPosition = el.style.position;
+        el.style.position = "relative";
+        el.appendChild(img);
+      });
+    }
+
+    function cleanUpAfterPrint() {
+      document.querySelectorAll("[_echarts_instance_]").forEach(function(el) {
+        var img = el.querySelector(".print-chart-img");
+        if (!img) return;
+        img.remove();
+        el.style.position = el.dataset.prevPosition || "";
+        delete el.dataset.prevPosition;
+      });
+    }
+
+    window.addEventListener("beforeprint", prepareChartsForPrint);
+    window.addEventListener("afterprint", cleanUpAfterPrint);
+  </script>
+</body>
+</html>
