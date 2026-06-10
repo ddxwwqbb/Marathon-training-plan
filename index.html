@@ -1170,41 +1170,79 @@
     }
 
     function generateWeekWorkouts(week, phase, weekVolume, paces) {
-      const monday = week.days[0];
-      const tuesday = week.days[1];
-      const wednesday = week.days[2];
-      const thursday = week.days[3];
-      const friday = week.days[4];
-      const saturday = week.days[5];
-      const sunday = week.days[6];
+      const totalW = Number($("planWeeks").value);
+      const w = week.number;
+      const isRecoveryWeek = (w % 4 === 0 && w < totalW - 1);
+      let currentPhase = "Base";
 
-      if (week.isRaceWeek) {
-        const raceDistance = 42.195;
-        return [
-          createWorkout(monday, "Easy taper run", "Easy", "35 min", 6, "RPE 3–4 / HR Zone 2", "Normal hydration; no aggressive carb load yet", `Keep legs fresh. Run relaxed at ${secondsToPace(paces.Easy)} and finish with 4 × 15 sec strides.`),
-          createWorkout(wednesday, "Race-pace sharpening", "Tempo", "40 min", 8, "RPE 6 with short race-pace touches", "Start carbohydrate emphasis after this session", `Warm up 15 min, then 3 × 1 km near marathon race pace (${secondsToPace(paces.Race)}) with easy jog recoveries. Stop while feeling sharp.`),
-          createWorkout(friday, "Pre-race shakeout", "Easy", "20 min", 4, "RPE 2–3 / very relaxed", "Sip electrolytes; avoid over-drinking", "Short shakeout only. Include mobility after the run and keep the rest of the day easy."),
-          createWorkout(sunday, "Race Day — Marathon", "LSD", "Race", raceDistance, "Controlled start, steady middle, committed final 10 km", "60–90g carbs/hr + 500–750ml fluid/hr based on conditions", `Target race pace is ${secondsToPace(paces.Race)}. Open conservatively for 5 km, lock into rhythm through 32 km, then race by effort.`)
-        ];
+      if (w > Number($("baseWeeks").value)) currentPhase = "Build";
+      if (w > Number($("baseWeeks").value) + Number($("buildWeeks").value)) currentPhase = "Peak";
+      if (w > totalW - Number($("taperWeeks").value)) currentPhase = "Taper";
+
+      let volMultiplier = isRecoveryWeek ? 0.7 : (1 + (w * 0.03));
+      if (currentPhase === "Taper") volMultiplier = (totalW - w + 1) * 0.35;
+
+      const workouts = [];
+      const addWorkoutHelper = (dayOffset, type, title, duration, distance, intensity, fueling, details) => {
+        const typeMap = {
+          easy: "Easy",
+          lsd: "LSD",
+          tempo: "Tempo",
+          interval: "Interval",
+          strength: "Strength"
+        };
+        const day = week.days[dayOffset];
+        if (!day) return;
+        workouts.push(createWorkout(
+          day,
+          title,
+          typeMap[type] || type,
+          typeof duration === "number" ? `${duration} min` : duration,
+          distance,
+          intensity,
+          fueling,
+          details
+        ));
+      };
+
+      if (currentPhase === "Base") {
+        addWorkoutHelper(1, "easy", "Aerobic Baseline + Strides", 45, Math.round(7 * volMultiplier), "RPE 4-5", "Water only", `Run flat route at ${secondsToPace(paces.Easy)}. Add 5x100m accelerations.`);
+      } else if (currentPhase === "Build") {
+        addWorkoutHelper(1, "interval", "VO2 Max Repeat Hills", 50, Math.round(9 * volMultiplier), "RPE 8", "Electrolytes pre-run", `6x60s uphill hard charges. Recover fully between reps; use ${secondsToPace(paces.Interval)} as a flat-ground reference only.`);
+      } else if (currentPhase === "Peak") {
+        addWorkoutHelper(1, "interval", "Track Classic Yasso 800s", 60, Math.round(11 * volMultiplier), "RPE 9", "Pre-run gel hydration", `Execute 8x800m intervals with controlled recoveries. Flat-ground reference: ${secondsToPace(paces.Interval)}.`);
+      } else if (currentPhase === "Taper") {
+        addWorkoutHelper(1, "easy", "Taper Sharpener Session", 30, 5, "RPE 4", "Water only", `Relaxed recovery mechanics at ${secondsToPace(paces.Easy)}. Keep the session crisp, not tiring.`);
       }
 
-      const longRun = Math.max(12, Math.round(weekVolume * (phase === "Peak" ? 0.38 : 0.34)));
-      const quality = phase === "Base" ? "Easy" : phase === "Build" ? "Tempo" : "Interval";
-      const qualityDistance = Math.max(7, Math.round(weekVolume * (phase === "Peak" ? 0.18 : 0.15)));
-      const easyA = Math.max(6, Math.round(weekVolume * 0.16));
-      const easyB = Math.max(5, Math.round(weekVolume * 0.13));
-      const recovery = Math.max(4, Math.round(weekVolume - longRun - qualityDistance - easyA - easyB));
+      if (w !== totalW && (w % 2 === 1)) {
+        addWorkoutHelper(2, "strength", "Structural Leg Strength & Core", 45, 0, "RPE 6", "Protein allocation post", "Focus on single-leg stability.");
+      } else if (w !== totalW) {
+        addWorkoutHelper(2, "easy", "Midweek Recovery Flush", 40, Math.round(6 * volMultiplier), "RPE 3", "Water", `Low pressure recovery tracking at ${secondsToPace(paces.Easy)} or slower.`);
+      }
 
-      const workouts = [
-        createWorkout(tuesday, phase === "Base" ? "Aerobic durability run" : quality === "Tempo" ? "Threshold development" : "VO₂ max interval set", quality, `${Math.round(qualityDistance * 5.5)} min`, qualityDistance, quality === "Interval" ? "RPE 8–9 / HR Zone 5 repeats" : quality === "Tempo" ? "RPE 7 / upper Zone 3–4" : "RPE 4 / Zone 2", quality === "Interval" ? "30–45g carbs before; water during" : "Light carbs if early morning; hydrate normally", quality === "Interval" ? `Warm up 20 min. Main set: 5–7 × 1 km around ${secondsToPace(paces.Interval)} with equal jog recovery. Cool down fully.` : quality === "Tempo" ? `Warm up 15 min. Run 3 × 10 min around ${secondsToPace(paces.Tempo)} with 3 min jog. Stay smooth, not strained.` : `Run easy at ${secondsToPace(paces.Easy)}. Add 6 × 20 sec strides on flat ground.`),
-        createWorkout(wednesday, "Easy aerobic run", "Easy", `${Math.round(easyA * 6)} min`, easyA, "RPE 3–4 / HR Zone 2", "Hydrate to thirst", `Stay conversational at ${secondsToPace(paces.Easy)}. Keep cadence light and finish feeling better than at the start.`),
-        createWorkout(thursday, "Strength and mobility", "Strength", "40 min", 0, "RPE 6 / controlled lifting", "Protein-focused recovery meal", "Single-leg strength, posterior chain, calf capacity, trunk stability, and 10 min mobility. Avoid soreness before long run."),
-        createWorkout(friday, "Recovery run", "Easy", `${Math.round(recovery * 6.2)} min`, recovery, "RPE 2–3 / low Zone 2", "Optional electrolytes", `Recovery-first. Run slower than ${secondsToPace(paces.Easy)} if fatigue is present.`),
-        createWorkout(saturday, phase === "Peak" ? "Marathon-specific long run" : "Long slow distance", "LSD", `${Math.round(longRun * 5.8)} min`, longRun, "RPE 4–6 / Zone 2 with controlled finish", "60–80g carbs/hr + 500–750ml fluid/hr", phase === "Peak" ? `Run mostly at ${secondsToPace(paces.LSD)} with the final 6–10 km near race pace if controlled.` : `Keep the whole run steady at ${secondsToPace(paces.LSD)}. Practice fueling from the first 30 minutes.`)
-      ];
+      if (currentPhase === "Base") {
+        addWorkoutHelper(3, "tempo", "Aerobic Threshold Continuous Cruise", 45, Math.round(8 * volMultiplier), "RPE 6", "Water only", `Sustained tempo focus. Use ${secondsToPace(paces.Tempo)} as the ceiling, not the floor.`);
+      } else if (currentPhase === "Build" || currentPhase === "Peak") {
+        addWorkoutHelper(3, "tempo", "Lactate Threshold Progression Sets", 60, Math.round(12 * volMultiplier), "RPE 7-8", "30g CHO fuel trace", `Warm up. Execute 3x3000m blocks around ${secondsToPace(paces.Tempo)} with controlled recoveries.`);
+      } else if (currentPhase === "Taper") {
+        addWorkoutHelper(3, "tempo", "Marathon Pace Precision Check", 40, 6, "RPE 6", "Simulate race morning", `Lock into target marathon race pace: ${secondsToPace(paces.Race)}.`);
+      }
 
-      if (phase !== "Base") {
-        workouts.push(createWorkout(monday, "Regeneration jog", "Easy", `${Math.round(easyB * 6.4)} min`, easyB, "RPE 2–3 / soft surface if possible", "Normal hydration", "Very easy circulation run. Skip if recovery markers are poor."));
+      if (w !== totalW) {
+        addWorkoutHelper(5, "easy", "Pre-Long Run Activation Shakeout", 30, 4, "RPE 3", "Hydration alignment", "Prime the legs.");
+      }
+
+      if (w === totalW) {
+        addWorkoutHelper(6, "interval", "RACE DAY: MARATHON PINNACLE", 240, 42.2, "MAX RACE EFFORT", "90g CHO/hr strategy", `Trust the taper. Target race pace: ${secondsToPace(paces.Race)}.`);
+      } else {
+        let longDistance = 16 + (w * 1.2);
+        if (isRecoveryWeek) longDistance = longDistance * 0.75;
+        if (currentPhase === "Peak") longDistance = Math.min(35, longDistance);
+        if (currentPhase === "Taper") longDistance = w === totalW - 1 ? 16 : 10;
+        longDistance = Math.round(longDistance);
+        const fuelingTarget = longDistance >= 22 ? "60-90g CHO hourly" : "30-40g CHO hourly";
+        addWorkoutHelper(6, "lsd", "Long Endurance Run", Math.round(longDistance * 5.5), longDistance, "RPE 5 (Zone 2)", fuelingTarget, `Focus on structural compliance. Settle near ${secondsToPace(paces.LSD)} and prioritize durability.`);
       }
 
       return workouts;
