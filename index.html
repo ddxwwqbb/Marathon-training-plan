@@ -778,7 +778,7 @@
 
       <aside class="race-panel">
         <div class="race-countdown">
-          <span class="value" id="daysToRace">—</span>
+          <span class="value" id="daysToRace">鈥?</span>
           <span class="label" id="raceLabel">days to race day</span>
         </div>
         <div class="hint" id="boundaryHint">Race date automatically rolls forward to the nearest Sunday when needed.</div>
@@ -843,7 +843,7 @@
       <div class="pace-grid">
         <div class="pace-card">
           <span>Race pace</span>
-          <strong id="racePace">—</strong>
+          <strong id="racePace">鈥?</strong>
         </div>
         <div class="control">
           <label for="easyOverride">Easy / recovery</label>
@@ -858,26 +858,26 @@
           <input id="tempoOverride" placeholder="Auto" />
         </div>
         <div class="control">
-          <label for="intervalOverride">Interval / VO₂</label>
+          <label for="intervalOverride">Interval / VO鈧?</label>
           <input id="intervalOverride" placeholder="Auto" />
         </div>
       </div>
       <div class="pace-grid" style="margin-top:10px">
         <div class="pace-card type-easy">
           <span>Easy</span>
-          <strong id="easyPace">—</strong>
+          <strong id="easyPace">鈥?</strong>
         </div>
         <div class="pace-card type-lsd">
           <span>LSD</span>
-          <strong id="lsdPace">—</strong>
+          <strong id="lsdPace">鈥?</strong>
         </div>
         <div class="pace-card type-tempo">
           <span>Tempo</span>
-          <strong id="tempoPace">—</strong>
+          <strong id="tempoPace">鈥?</strong>
         </div>
         <div class="pace-card type-interval">
           <span>Interval</span>
-          <strong id="intervalPace">—</strong>
+          <strong id="intervalPace">鈥?</strong>
         </div>
         <div class="pace-card type-strength">
           <span>Strength</span>
@@ -919,7 +919,7 @@
           <h2 id="modalTitle">Workout</h2>
           <p class="hint" id="modalDate" style="margin:6px 0 0"></p>
         </div>
-        <button class="close-btn" id="closeModal" aria-label="Close">×</button>
+        <button class="close-btn" id="closeModal" aria-label="Close">脳</button>
       </div>
 
       <div class="existing-list" id="existingList"></div>
@@ -1050,7 +1050,7 @@
     }
 
     function secondsToPace(seconds) {
-      if (!Number.isFinite(seconds) || seconds <= 0) return "—";
+      if (!Number.isFinite(seconds) || seconds <= 0) return "鈥?";
       const rounded = Math.round(seconds);
       const min = Math.floor(rounded / 60);
       const sec = String(rounded % 60).padStart(2, "0");
@@ -1181,166 +1181,166 @@
 
     const TRAINING_PLAN = {
       1: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Easy", "Easy Run + Strides", "45 min", 8, "RPE 3-4 / Zone 2", "Water only", "Run 45 min entirely easy in Zone 2. Then add 5x 20s strides on flat ground with full walk-back recovery — build smoothly to ~90% effort, staying relaxed and focusing on turnover and form, not sprinting."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run", "75-90 min", 15, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "Run 75-90 min entirely at easy/Zone 2 effort. First foundation long run — keep it comfortable and conversational the whole way, build the aerobic base, and practice steady fueling and hydration."]
+        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Current week opener. Lower-body strength plus push work. Keep load moderate and controlled."],
+        ["Easy", "E-Pace Run + 5x20s Strides", "45 min", 6.41, "RPE 3-4 / Zone 2", "Water only", "Completed session: 45 min easy with 5 x 20s strides, full walk-back recovery."],
+        ["Easy", "E-Pace Run", "35 min", 6.41, "RPE 3-4 / Zone 2", "Water only", "Completed session: 35 min easy aerobic run at conversational effort."],
+        ["Strength", "Double-Up: Technical Swim -> Upper Body + Core", "30-45 min + 45 min", 0, "RPE 5-6", "Hydrate + protein post-session", "Technical swim first, then upper-body pull and core strength. Keep effort controlled to protect run quality."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Full rest day. Prioritize sleep, hydration, and recovery habits."],
+        ["Easy", "E-Pace Run", "30 min", 5, "RPE 3-4 / Zone 2", "Water only", "Short aerobic maintenance run, fully easy and relaxed."],
+        ["LSD", "E-Pace Long Run", "75-90 min", 15, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "Long easy run (about 14-16 km). Keep effort steady and conversational." ]
       ],
       2: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Easy", "Easy Run + Strides", "50 min", 9, "RPE 3-4 / Zone 2", "Water only", "Run 50 min entirely easy in Zone 2. Then add 6x 20s strides on flat ground with full walk-back recovery — build smoothly to ~90% effort, staying relaxed and focusing on turnover and form, not sprinting."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run", "90 min", 16, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "Run 90 min at steady easy/Zone 2 effort. Keep the pace conversational throughout, hold good form as fatigue builds late, and continue practicing your fueling and hydration rhythm."]
+        ["Rest", "Rest Day (optional light strength)", "-", 0, "Recovery", "Normal nutrition", "Primary prescription is rest. Optional light mobility or easy strength only if fresh."],
+        ["Easy", "E-Pace Run + 6x20s Strides", "50 min", 8, "RPE 3-4 / Zone 2", "Water only", "50 min easy run then 6 x 20s strides with full recovery."],
+        ["Easy", "E-Pace Run or Zone 2 Bike", "40 min", 7, "RPE 3-4 / Zone 2", "Water only", "Choose easy run or low-impact Zone 2 bike for aerobic volume."],
+        ["Strength", "Upper Body + Core + Technical Swim", "45 min + 30-45 min", 0, "RPE 5-6", "Hydrate + protein post-session", "Strength and swim double-up day. Keep total stress moderate."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "40 min", 7, "RPE 3-4 / Zone 2", "Water only", "Aerobic maintenance run at easy conversational pace."],
+        ["LSD", "LSD Run", "Long run", 16, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "Steady 16 km long run, relaxed early pacing and consistent fueling."]
       ],
       3: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Easy", "Easy Run + Strides", "50 min", 9, "RPE 3-4 / Zone 2", "Water only", "Run 50 min entirely easy in Zone 2. Then add 6x 20s strides on flat ground with full walk-back recovery — build smoothly to ~90% effort, staying relaxed and focusing on turnover and form, not sprinting."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run", "100 min", 18, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "Run 100 min at easy/Zone 2 effort — the longest run of Phase 1. Stay disciplined on pace early so the final 20 minutes remain strong and controlled. Fuel every 30-40 min."]
+        ["Rest", "Rest Day (optional light strength)", "-", 0, "Recovery", "Normal nutrition", "Rest first. Optional very light strength only if recovered."],
+        ["Interval", "5x400m @ I-Pace", "Workout", 7, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 5 x 400m at I-Pace with 2 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "45 min", 8, "RPE 3-4 / Zone 2", "Water only", "Easy aerobic run to absorb quality work."],
+        ["Tempo", "5 km @ T-Pace + Upper Body/Core Strength", "Workout + 45 min", 8, "RPE 7-8 / T-Pace", "Hydrate; protein post-session", "Continuous 5 km tempo at T-Pace, then upper-body/core strength."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "45 min", 8, "RPE 3-4 / Zone 2", "Water only", "Comfortable easy run, avoid drifting into moderate effort."],
+        ["LSD", "LSD Run", "Long run", 18, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "18 km easy long run with controlled pacing and fueling."]
       ],
       4: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Easy", "Easy Run + Strides", "40 min", 7, "RPE 3-4 / Zone 2", "Water only", "Run 40 min entirely easy in Zone 2. Then add 4x 20s strides on flat ground with full walk-back recovery — build smoothly to ~90% effort, staying relaxed and focusing on turnover and form, not sprinting."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run (Down Week)", "75 min", 13, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "Down-week long run: 75 min easy/Zone 2 only. Deliberately shorter to absorb the first block — keep effort light and let the body recover and adapt."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Down week starts with full rest."],
+        ["Interval", "4x400m @ I-Pace", "Workout", 6, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 4 x 400m at I-Pace with 2 min jog recovery. Reduced down-week load."],
+        ["Easy", "E-Pace Run", "40 min", 7, "RPE 3-4 / Zone 2", "Water only", "Easy aerobic session, fully controlled."],
+        ["Tempo", "4 km @ T-Pace + Upper Body/Core Strength", "Workout + 45 min", 7, "RPE 7-8 / T-Pace", "Hydrate; protein post-session", "Shorter threshold tempo plus upper-body/core strength."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "30 min", 5, "RPE 3-4 / Zone 2", "Water only", "Short easy run for recovery and rhythm."],
+        ["LSD", "Down Week LSD Run", "Long run", 14, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "14 km easy long run to absorb prior workload."]
       ],
       5: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "Cruise Intervals (Q1)", "~60 min", 10, "RPE 7-8 / Threshold", "Hydrate; light CHO", "2 km easy warm-up. Main set: 4x 1.5 km at T-Pace with 1 min rest between reps. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run (Q2)", "16-18 km", 17, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "Run 16-18 km at easy/Zone 2 effort. Steady aerobic long run to open Phase 2 — hold form deep into the run and keep fueling consistent."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Full rest to prepare for quality sessions."],
+        ["Interval", "5x600m @ I-Pace", "Workout", 8, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 5 x 600m at I-Pace with 90s jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "45 min", 8, "RPE 3-4 / Zone 2", "Water only", "Easy aerobic support run."],
+        ["Tempo", "6 km @ T-Pace + Upper Body/Core Strength", "Workout + 45 min", 9, "RPE 7-8 / T-Pace", "Hydrate; protein post-session", "Continuous 6 km threshold tempo, then upper-body/core strength."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "45 min", 8, "RPE 3-4 / Zone 2", "Water only", "Easy run at conversational pace."],
+        ["LSD", "LSD Run", "Long run", 20, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "20 km long run, smooth pacing with steady fueling."]
       ],
       6: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "Tempo Run (Q1)", "~55 min", 9, "RPE 7-8 / Threshold", "Hydrate; light CHO", "2 km easy warm-up. Main set: 5 km continuous at T-Pace. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run + M-Pace (Q2)", "20 km", 20, "RPE 4-6 / Zone 2 → M-Pace", "30-40g CHO hourly", "Total 20 km. Run 14 km easy in Zone 2, then finish with 6 km at goal marathon pace. Run the easy portions in Zone 2, then lock into goal marathon pace for the M-Pace segment(s) — smooth, controlled, and repeatable. Rehearse fueling and hydration throughout."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Full rest day."],
+        ["Interval", "6x600m @ I-Pace", "Workout", 9, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 6 x 600m at I-Pace with 90s jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "50 min", 9, "RPE 3-4 / Zone 2", "Water only", "Steady easy run with relaxed mechanics."],
+        ["Tempo", "6 km @ T-Pace + Upper Body/Core Strength", "Workout + 45 min", 9, "RPE 7-8 / T-Pace", "Hydrate; protein post-session", "Repeat 6 km continuous threshold tempo and upper/core strength."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "45 min", 8, "RPE 3-4 / Zone 2", "Water only", "Easy aerobic run."],
+        ["LSD", "LSD Run", "Long run", 22, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "22 km long run. Keep pacing controlled throughout."]
       ],
       7: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "Cruise Intervals (Q1)", "~65 min", 11.5, "RPE 7-8 / Threshold", "Hydrate; light CHO", "2 km easy warm-up. Main set: 5x 1.5 km at T-Pace with 1 min rest between reps. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run (Q2)", "22 km", 22, "RPE 4-5 / Zone 2", "60-90g CHO hourly", "Run 22 km at easy/Zone 2 effort. Volume-building long run — stay patient with pace and dial in higher-volume race fueling (60-90g CHO/hr)."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Start of adapted 12-week main block."],
+        ["Interval", "6x800m @ I-Pace", "Workout", 10, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 6 x 800m at I-Pace with 2 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "Distance run", 8, "RPE 3-4 / Zone 2", "Water only", "8 km easy aerobic run."],
+        ["Tempo", "5 km @ T-Pace (continuous tempo)", "Workout", 8, "RPE 7-8 / T-Pace", "Hydrate; light CHO", "Continuous 5 km threshold tempo with warm-up and cool-down."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 6, "RPE 3-4 / Zone 2", "Water only", "6 km easy run."],
+        ["LSD", "LSD Run", "Long run", 18, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "18 km easy long run."]
       ],
       8: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "Tempo Run (Q1)", "~60 min", 10, "RPE 7-8 / Threshold", "Hydrate; light CHO", "2 km easy warm-up. Main set: 6 km continuous at T-Pace. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run + M-Pace (Q2)", "24 km", 24, "RPE 4-6 / Zone 2 → M-Pace", "60-90g CHO hourly", "Total 24 km. Run 14 km easy in Zone 2, then close with 10 km at goal marathon pace. Run the easy portions in Zone 2, then lock into goal marathon pace for the M-Pace segment(s) — smooth, controlled, and repeatable. Rehearse fueling and hydration throughout."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Recovery day."],
+        ["Interval", "8x400m @ I-Pace", "Workout", 9, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 8 x 400m at I-Pace with 2 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "Distance run", 10, "RPE 3-4 / Zone 2", "Water only", "10 km easy aerobic run."],
+        ["Tempo", "6 km @ T-Pace (continuous tempo)", "Workout", 9, "RPE 7-8 / T-Pace", "Hydrate; light CHO", "Continuous 6 km threshold tempo with warm-up and cool-down."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 8, "RPE 3-4 / Zone 2", "Water only", "8 km easy run."],
+        ["LSD", "LSD Run", "Long run", 20, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "20 km long run at controlled effort."]
       ],
       9: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "Light T-Pace (Q1)", "~45 min", 7, "RPE 7 / Threshold", "Hydrate; light CHO", "2 km easy warm-up. Main set: 3x 1 km at T-Pace with short jog recovery. Down-week volume — sharp but not draining. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run (Down Week / Q2)", "16 km", 16, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "Down-week long run: 16 km easy/Zone 2 only. Reduced distance to recover from the Phase 2 block and absorb the threshold work before the peak phase."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Recovery day."],
+        ["Interval", "5x1 km @ I-Pace", "Workout", 11, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 5 x 1 km at I-Pace with 3 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "Distance run", 12, "RPE 3-4 / Zone 2", "Water only", "12 km easy aerobic run."],
+        ["Tempo", "7 km @ T-Pace (continuous tempo)", "Workout", 10, "RPE 7-8 / T-Pace", "Hydrate; light CHO", "Continuous 7 km threshold tempo with warm-up and cool-down."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 10, "RPE 3-4 / Zone 2", "Water only", "10 km easy run."],
+        ["LSD", "LSD Run", "Long run", 22, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "22 km long run."]
       ],
       10: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "T-Pace Mix (Q1)", "~65 min", 11, "RPE 7-8 / Threshold", "Hydrate; light CHO", "3 km easy warm-up. Main set: 3x 2 km at T-Pace with 2 min rest between reps. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run + M-Pace (Q2)", "26 km", 26, "RPE 4-6 / Zone 2 → M-Pace", "60-90g CHO hourly", "Total 26 km. Run 10 km easy, 12 km at goal marathon pace, then 4 km easy to finish. Run the easy portions in Zone 2, then lock into goal marathon pace for the M-Pace segment(s) — smooth, controlled, and repeatable. Rehearse fueling and hydration throughout."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Recovery day."],
+        ["Interval", "6x1 km @ I-Pace", "Workout", 12, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 6 x 1 km at I-Pace with 3 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "Distance run", 8, "RPE 3-4 / Zone 2", "Water only", "8 km easy run."],
+        ["Tempo", "8 km @ T-Pace (continuous tempo)", "Workout", 11, "RPE 7-8 / T-Pace", "Hydrate; light CHO", "Continuous 8 km threshold tempo with warm-up and cool-down."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 12, "RPE 3-4 / Zone 2", "Water only", "12 km easy aerobic run."],
+        ["LSD", "LSD Run", "Long run", 24, "RPE 4-5 / Zone 2", "60-90g CHO hourly", "24 km long run with conservative first half."]
       ],
       11: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "Speed Endurance (Q1)", "~65 min", 11, "RPE 7-8 / Threshold", "Hydrate; light CHO", "3 km easy warm-up. Main set: 4x 1.5 km at T-Pace, then 4x 20s strides after the reps. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run (Q2)", "28 km", 28, "RPE 4-5 / Zone 2", "60-90g CHO hourly", "Run 28 km at easy/Zone 2 effort. Big aerobic long run — stay controlled early, hold form through the final third, and execute full race-day fueling."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Recovery day."],
+        ["Interval", "8x600m @ I-Pace", "Workout", 10, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 8 x 600m at I-Pace with 2 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "Distance run", 10, "RPE 3-4 / Zone 2", "Water only", "10 km easy aerobic run."],
+        ["Tempo", "Cruise Intervals: 2 km WU + 2x5 km @ M-Pace (1 km easy) + 2 km CD", "Workout", 15, "RPE 6-7 / M-Pace", "Hydrate; practice race fueling", "Adapted cruise interval set focused on marathon-pace durability."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 8, "RPE 3-4 / Zone 2", "Water only", "8 km easy run."],
+        ["LSD", "LSD Run (last 5 km @ M-Pace)", "Long run", 26, "RPE 4-6 / Zone 2 -> M-Pace", "60-90g CHO hourly", "26 km long run with final 5 km at goal marathon pace."]
       ],
       12: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "T-Pace Peak (Q1)", "~65 min", 11, "RPE 8 / Threshold", "Hydrate; light CHO", "2 km easy warm-up. Main set: 7 km continuous at T-Pace — the longest sustained threshold effort of the plan. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Peak Simulation (Q2)", "30 km", 30, "RPE 4-6 / Zone 2 → M-Pace", "60-90g CHO hourly", "Total 30 km. Peak race simulation: 8 km easy, 16 km at goal marathon pace, then 6 km easy. Treat the M-Pace block as a race rehearsal — same kit, fueling, and pacing discipline. Run the easy portions in Zone 2, then lock into goal marathon pace for the M-Pace segment(s) — smooth, controlled, and repeatable. Rehearse fueling and hydration throughout."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Recovery day."],
+        ["Interval", "5x1.2 km @ I-Pace", "Workout", 12, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 5 x 1.2 km at I-Pace with 3 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "Distance run", 12, "RPE 3-4 / Zone 2", "Water only", "12 km easy aerobic run."],
+        ["Tempo", "Cruise Intervals: 2 km WU + 3x3 km @ T-Pace (2 min rest) + 1 km CD", "Workout", 12, "RPE 7-8 / T-Pace", "Hydrate; light CHO", "Adapted threshold cruise set replacing a continuous 10 km tempo."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 10, "RPE 3-4 / Zone 2", "Water only", "10 km easy run."],
+        ["LSD", "LSD Run (last 5 km @ M-Pace)", "Long run", 28, "RPE 4-6 / Zone 2 -> M-Pace", "60-90g CHO hourly", "28 km long run with final 5 km at marathon pace."]
       ],
       13: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "Cruise Peak (Q1)", "~70 min", 13, "RPE 8 / Threshold", "Hydrate; light CHO", "3 km easy warm-up. Main set: 4x 2 km at T-Pace with 2 min rest between reps. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run (Q2)", "32 km", 32, "RPE 4-5 / Zone 2", "60-90g CHO hourly", "Run 32 km at easy/Zone 2 effort — the longest run of the plan. Build mental and structural resilience; stay patient with pace and fuel aggressively (60-90g CHO/hr)."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Recovery day."],
+        ["Interval", "6x1 km @ I-Pace", "Workout", 12, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 6 x 1 km at I-Pace with 3 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "Distance run", 8, "RPE 3-4 / Zone 2", "Water only", "8 km easy aerobic run."],
+        ["Tempo", "Cruise Intervals: 2 km WU + 4x2.5 km @ T-Pace (2 min rest) + 1 km CD", "Workout", 13, "RPE 7-8 / T-Pace", "Hydrate; light CHO", "Adapted threshold set replacing a continuous 12 km tempo."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 12, "RPE 3-4 / Zone 2", "Water only", "12 km easy run."],
+        ["LSD", "LSD Run", "Long run", 30, "RPE 4-5 / Zone 2", "60-90g CHO hourly", "30 km long run with controlled pacing."]
       ],
       14: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "Maintenance (Q1)", "~45 min", 8, "RPE 7 / Threshold", "Hydrate; light CHO", "2 km easy warm-up. Main set: 4 km continuous at T-Pace. Down-week maintenance — keep the touch without draining the legs. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run + M-Pace (Down Week / Q2)", "20 km", 20, "RPE 4-6 / Zone 2 → M-Pace", "30-40g CHO hourly", "Total 20 km. Down-week long run: 10 km easy, then 10 km at goal marathon pace. Reduced total volume to recover from peak week while keeping race-pace feel. Run the easy portions in Zone 2, then lock into goal marathon pace for the M-Pace segment(s) — smooth, controlled, and repeatable. Rehearse fueling and hydration throughout."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Recovery day."],
+        ["Interval", "8x800m @ I-Pace", "Workout", 12, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 8 x 800m at I-Pace with 2 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "Distance run", 10, "RPE 3-4 / Zone 2", "Water only", "10 km easy run."],
+        ["Tempo", "Cruise Intervals: 2 km WU + 3x4 km @ T-Pace (2 min rest) + 2 km CD", "Workout", 16, "RPE 7-8 / T-Pace", "Hydrate; light CHO", "Adapted threshold set replacing a continuous 15 km tempo."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 8, "RPE 3-4 / Zone 2", "Water only", "8 km easy run."],
+        ["LSD", "LSD Run (last 5 km @ M-Pace)", "Long run", 32, "RPE 4-6 / Zone 2 -> M-Pace", "60-90g CHO hourly", "32 km long run with final 5 km at marathon pace."]
       ],
       15: [
-        ["Strength", "Strength: Lower Body + Push", "45 min", 0, "RPE 6", "Protein post-session", "Warm up 8-10 min with dynamic mobility and glute activation. Main lifts: squat or deadlift variation, walking lunges, plus a push (bench or overhead press). 3-4 sets of 6-10 reps, controlled tempo, emphasizing single-leg stability. Refuel with protein afterward."],
-        ["Tempo", "Threshold Set (Q1)", "~50 min", 8.5, "RPE 7-8 / Threshold", "Hydrate; light CHO", "2 km easy warm-up. Main set: 3x 1.5 km at T-Pace with short jog recovery. First taper week — sharpen without accumulating fatigue. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run / Zone 2 Bike", "30-45 min", 6, "RPE 3 / Zone 2", "Water only", "30-45 min fully aerobic. Choose an easy Zone 2 run or low-impact Zone 2 bike to add aerobic volume without extra pounding. Heart rate stays in Zone 2, breathing easy throughout."],
-        ["Strength", "Strength: Upper Body Pull + Core", "45 min", 0, "RPE 6", "Protein post-session", "Warm up shoulders and thoracic spine. Main work: pull-ups or rows, a posterior-chain accessory, and 10 min dedicated core (planks, anti-rotation, dead bugs). 3 sets each. Keep effort moderate so running legs stay fresh."],
-        ["Easy", "Easy Run", "30-45 min", 6, "RPE 3-4 / Zone 2", "Water only", "30-45 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run + M-Pace (Q2)", "18 km", 18, "RPE 4-6 / Zone 2 → M-Pace", "30-40g CHO hourly", "Total 18 km. Run 12 km easy, then 6 km at goal marathon pace. Taper long run — shorter distance, but keep the race-pace segment crisp and controlled. Run the easy portions in Zone 2, then lock into goal marathon pace for the M-Pace segment(s) — smooth, controlled, and repeatable. Rehearse fueling and hydration throughout."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Recovery day."],
+        ["Interval", "5x1.5 km @ I-Pace", "Workout", 13, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 5 x 1.5 km at I-Pace with 4 min jog recovery. Include warm-up and cool-down."],
+        ["Easy", "E-Pace Run", "Distance run", 12, "RPE 3-4 / Zone 2", "Water only", "12 km easy run."],
+        ["Tempo", "Cruise Intervals: 2 km WU + 4x3 km @ T-Pace (2 min rest) + 2 km CD", "Workout", 16, "RPE 7-8 / T-Pace", "Hydrate; light CHO", "Adapted threshold set replacing a continuous 18 km tempo."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 10, "RPE 3-4 / Zone 2", "Water only", "10 km easy run."],
+        ["LSD", "Peak LSD Run", "Long run", 32, "RPE 4-5 / Zone 2", "60-90g CHO hourly", "Peak-distance long run. Stay conservative early and execute fueling plan."]
       ],
       16: [
-        ["Strength", "Strength: Light Lower Body", "40 min", 0, "RPE 5", "Protein post-session", "Light lower-body maintenance only. Bodyweight or light-load squats, step-ups, and calf work — 2 sets, submaximal. Goal is to stay springy without inducing fatigue during taper."],
-        ["Tempo", "Threshold Touch (Q1)", "~45 min", 8, "RPE 7 / Threshold", "Hydrate; light CHO", "2 km easy warm-up. Main set: 4 km continuous at T-Pace. Keep the threshold feel alive at reduced volume. Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 2 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run", "30 min", 5, "RPE 3 / Zone 2", "Water only", "30 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Strength", "Strength: Light Upper Body + Core", "40 min", 0, "RPE 5", "Protein post-session", "Light upper-body pull and 10 min easy core (planks, bird-dogs). 2 sets, low load. Keep it refreshing, not taxing, during taper week."],
-        ["Easy", "Easy Run", "30 min", 5, "RPE 3 / Zone 2", "Water only", "30 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["LSD", "Long Run (Q2)", "14 km", 14, "RPE 4-5 / Zone 2", "30-40g CHO hourly", "Run 14 km easy/Zone 2 only. Final moderate long run — keep it comfortable and let the taper build freshness in the legs."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Taper phase 1 starts with full rest."],
+        ["Interval", "4x2 km @ I-Pace", "Workout", 14, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 4 x 2 km at I-Pace with 4 min jog recovery. Keep overall strain controlled during taper."],
+        ["Easy", "E-Pace Run", "Distance run", 8, "RPE 3-4 / Zone 2", "Water only", "8 km easy run."],
+        ["Tempo", "Cruise Intervals: 2 km WU + 2x4 km @ M-Pace (1 km rest) + 1 km CD", "Workout", 11, "RPE 6-7 / M-Pace", "Hydrate; practice race fueling", "Marathon-pace specific set adapted from 10 km easy + 10 km marathon pace concept."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 8, "RPE 3-4 / Zone 2", "Water only", "8 km easy run to maintain rhythm."],
+        ["LSD", "LSD Run (8 km @ M-Pace)", "Long run", 24, "RPE 4-6 / Zone 2 -> M-Pace", "60-90g CHO hourly", "24 km long run with 8 km at goal marathon pace."]
       ],
       17: [
-        ["Rest", "Rest Day", "—", 0, "Recovery", "Normal nutrition", "Full rest day to open race week. Sleep well, hydrate, and keep stress low."],
-        ["Tempo", "M-Pace Primer (Q1)", "~35 min", 6, "RPE 6 / Marathon pace", "Hydrate; light CHO", "2 km easy warm-up. Main set: 3 km at goal MARATHON pace (not T-Pace). Hold threshold (T-Pace) at a comfortably-hard, controlled effort you could sustain for ~1 hour. 1 km easy cool-down. Stay smooth, not straining."],
-        ["Easy", "Easy Run", "30 min", 5, "RPE 3 / Zone 2", "Water only", "30 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Strength", "Light Core / Mobility", "30 min", 0, "RPE 4", "Normal nutrition", "Gentle core and mobility circuit: planks, glute bridges, hip openers, and thoracic rotations. Keep everything easy and restorative — no fatigue this close to race day."],
-        ["Easy", "Easy Run", "30 min", 5, "RPE 3 / Zone 2", "Water only", "30 min at easy conversational pace in Zone 2. Aerobic maintenance and active recovery — light cadence, relaxed shoulders. Not a workout; keep effort truly easy."],
-        ["Rest", "Full Rest Day", "—", 0, "Recovery", "Normal nutrition", "Complete rest — no structured training. Prioritize sleep, hydration, and nutrition to absorb the week's work and arrive fresh for the Sunday long run."],
-        ["Easy", "Easy Run + Strides", "10 km", 10, "RPE 3-4 / Zone 2", "30-40g CHO hourly", "Run 10 km easy/Zone 2, then add 4x strides (20s, relaxed and quick). Keeps the legs primed while staying fresh — no hard efforts."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Taper phase 2 starts with recovery."],
+        ["Interval", "6x1 km @ I-Pace", "Workout", 11, "RPE 8-9 / I-Pace", "Hydrate; light CHO", "Main set: 6 x 1 km at I-Pace with 3 min jog recovery. Keep execution sharp but not exhaustive."],
+        ["Easy", "E-Pace Run", "Distance run", 10, "RPE 3-4 / Zone 2", "Water only", "10 km easy run."],
+        ["Tempo", "5 km @ T-Pace (continuous)", "Workout", 8, "RPE 7-8 / T-Pace", "Hydrate; light CHO", "Continuous threshold session with warm-up and cool-down."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "No structured training."],
+        ["Easy", "E-Pace Run", "Distance run", 6, "RPE 3-4 / Zone 2", "Water only", "6 km easy run to stay loose."],
+        ["LSD", "LSD Run (last 5 km @ M-Pace)", "Long run", 16, "RPE 4-6 / Zone 2 -> M-Pace", "30-40g CHO hourly", "16 km long run with final 5 km at goal marathon pace."]
       ],
       18: [
-        ["Rest", "Rest Day", "—", 0, "Recovery", "Normal nutrition", "Full rest. Begin sharpening focus on the race — light activity only if restless, otherwise stay off the legs."],
-        ["Easy", "Shakeout Run + Strides", "20-30 min", 4, "RPE 3", "Water only", "20-30 min very easy shakeout, then 3x short strides to stay sharp. Keep it light and relaxed — purely to loosen the legs."],
-        ["Rest", "Rest Day", "—", 0, "Recovery", "Normal nutrition", "Full rest. Prioritize sleep, hydration, and stress management. Continue steady carbohydrate intake."],
-        ["Easy", "Light Jog", "20 min", 3, "RPE 2-3", "Water only", "20 min light jog to keep blood flowing. Effort stays very easy — this is activation, not training."],
-        ["Rest", "Rest Day", "—", 0, "Recovery", "Carb-loading focus", "Full rest. Begin race-week carbohydrate loading, top up hydration and electrolytes, and stay off your feet as much as possible. Lay out race kit and rehearse logistics."],
-        ["Easy", "Shakeout Run", "15 min", 2.5, "RPE 2-3", "Water only", "15 min easy shakeout the day before the race. Loosen the legs, rehearse race-morning routine, and stay relaxed. Lay out kit tonight."],
-        ["LSD", "RACE DAY: Marathon", "Race", 42.2, "MAX RACE EFFORT", "90g CHO/hr strategy", "42.2 km marathon — Sub-3:30 target. Start conservatively for the first 5 km at goal marathon pace, lock into rhythm through 32 km, then race the final 10 km on effort. Fuel ~90g CHO/hr and hydrate to plan. Trust the taper."]
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Normal nutrition", "Race-week recovery day."],
+        ["Tempo", "3x1 km @ T-Pace (2 min rest)", "Workout", 8, "RPE 7 / T-Pace", "Hydrate; light CHO", "Controlled sharpening workout. Stop before fatigue accumulates."],
+        ["Easy", "E-Pace Run", "Distance run", 6, "RPE 3 / Zone 2", "Water only", "6 km very easy run."],
+        ["Tempo", "3 km @ M-Pace", "Workout", 5, "RPE 6 / M-Pace", "Hydrate; light CHO", "Short marathon-pace refresher with easy warm-up and cool-down."],
+        ["Rest", "Rest Day", "-", 0, "Recovery", "Carb-loading focus", "Rest and carb-load. Keep stress and standing time low."],
+        ["Easy", "Shakeout Run + 3 light strides", "15-20 min", 3, "RPE 2-3", "Water only", "Very light shakeout. Keep legs loose, no fatigue."],
+        ["LSD", "RACE DAY: Marathon", "Race", 42.2, "MAX RACE EFFORT", "Race fueling plan (up to 90g CHO/hr)", "42.2 km marathon. Target sub-3:30 (about 4:58/km). Start controlled, lock into rhythm, and execute fueling plan."]
       ]
     };
 
@@ -1445,7 +1445,7 @@
           state.workouts.filter((w) => w.dateKey === key).forEach((w) => {
             const chip = document.createElement("div");
             chip.className = `workout-chip ${typeClass[w.type] || "type-rest"}`;
-            chip.innerHTML = `<strong>${escapeHtml(w.title)}</strong><small>${escapeHtml(w.type)} · ${Number(w.distance || 0).toFixed(1)} km · ${escapeHtml(w.duration || "")}</small>`;
+            chip.innerHTML = `<strong>${escapeHtml(w.title)}</strong><small>${escapeHtml(w.type)} 路 ${Number(w.distance || 0).toFixed(1)} km 路 ${escapeHtml(w.duration || "")}</small>`;
             workouts.appendChild(chip);
           });
 
@@ -1565,7 +1565,7 @@
           <div>
             <span class="type-badge ${typeClass[w.type]}">${escapeHtml(w.type)}</span>
             <strong style="display:block;margin-top:6px">${escapeHtml(w.title)}</strong>
-            <span class="hint">${Number(w.distance || 0).toFixed(1)} km · ${escapeHtml(w.duration || "")}${w.intensity ? " · " + escapeHtml(w.intensity) : ""}</span>
+            <span class="hint">${Number(w.distance || 0).toFixed(1)} km 路 ${escapeHtml(w.duration || "")}${w.intensity ? " 路 " + escapeHtml(w.intensity) : ""}</span>
             ${w.fueling ? `<span class="hint" style="display:block;margin-top:2px">Fueling: ${escapeHtml(w.fueling)}</span>` : ""}
             ${w.details ? `<p class="item-details">${escapeHtml(w.details)}</p>` : ""}
           </div>
