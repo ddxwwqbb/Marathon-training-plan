@@ -778,7 +778,7 @@
 
       <aside class="race-panel">
         <div class="race-countdown">
-          <span class="value" id="daysToRace">鈥?</span>
+          <span class="value" id="daysToRace">&mdash;</span>
           <span class="label" id="raceLabel">days to race day</span>
         </div>
         <div class="hint" id="boundaryHint">Race date automatically rolls forward to the nearest Sunday when needed.</div>
@@ -836,6 +836,8 @@
         <button class="btn" id="exportBtn">Export workouts to ICS</button>
         <span class="hint" id="phaseHint">Phase total must match the selected plan length.</span>
       </div>
+      <p class="hint" id="saveStatus" role="status" aria-live="polite">Settings and saved workouts autosave in this browser.</p>
+      <p class="hint">Calendar export: leave workout times blank for all-day events, or set both times using this device's local timezone.</p>
     </section>
 
     <section class="panel">
@@ -843,7 +845,7 @@
       <div class="pace-grid">
         <div class="pace-card">
           <span>Race pace</span>
-          <strong id="racePace">鈥?</strong>
+          <strong id="racePace">&mdash;</strong>
         </div>
         <div class="control">
           <label for="easyOverride">Easy / recovery</label>
@@ -858,26 +860,26 @@
           <input id="tempoOverride" placeholder="Auto" />
         </div>
         <div class="control">
-          <label for="intervalOverride">Interval / VO鈧?</label>
+          <label for="intervalOverride">Interval / VO<sub>2</sub> max</label>
           <input id="intervalOverride" placeholder="Auto" />
         </div>
       </div>
       <div class="pace-grid" style="margin-top:10px">
         <div class="pace-card type-easy">
           <span>Easy</span>
-          <strong id="easyPace">鈥?</strong>
+          <strong id="easyPace">&mdash;</strong>
         </div>
         <div class="pace-card type-lsd">
           <span>LSD</span>
-          <strong id="lsdPace">鈥?</strong>
+          <strong id="lsdPace">&mdash;</strong>
         </div>
         <div class="pace-card type-tempo">
           <span>Tempo</span>
-          <strong id="tempoPace">鈥?</strong>
+          <strong id="tempoPace">&mdash;</strong>
         </div>
         <div class="pace-card type-interval">
           <span>Interval</span>
-          <strong id="intervalPace">鈥?</strong>
+          <strong id="intervalPace">&mdash;</strong>
         </div>
         <div class="pace-card type-strength">
           <span>Strength</span>
@@ -919,7 +921,7 @@
           <h2 id="modalTitle">Workout</h2>
           <p class="hint" id="modalDate" style="margin:6px 0 0"></p>
         </div>
-        <button class="close-btn" id="closeModal" aria-label="Close">脳</button>
+        <button class="close-btn" id="closeModal" aria-label="Close">&times;</button>
       </div>
 
       <div class="existing-list" id="existingList"></div>
@@ -947,6 +949,14 @@
             <input id="workoutDuration" placeholder="e.g., 75 min" />
           </div>
           <div class="modal-field">
+            <label for="workoutStartTime">Local start time (optional)</label>
+            <input id="workoutStartTime" type="time" />
+          </div>
+          <div class="modal-field">
+            <label for="workoutEndTime">Local end time (same day)</label>
+            <input id="workoutEndTime" type="time" />
+          </div>
+          <div class="modal-field">
             <label for="workoutDistance">Distance km</label>
             <input id="workoutDistance" type="number" min="0" step="0.1" placeholder="0.0" />
           </div>
@@ -972,11 +982,19 @@
     </div>
   </div>
 
-  <div class="toast" id="toast">Saved</div>
+  <div class="toast" id="toast" role="status" aria-live="polite">Saved</div>
 
   <script>
     const MS_DAY = 24 * 60 * 60 * 1000;
     const marathonKm = 42.195;
+    const STORAGE_KEY = "marathon-planner-autosave-v1";
+    const SETTINGS_IDS = [
+      "raceDate", "planWeeks", "targetTime", "peakVolume",
+      "baseWeeks", "buildWeeks", "peakWeeks", "taperWeeks",
+      "easyOverride", "lsdOverride", "tempoOverride", "intervalOverride"
+    ];
+    let hasWorkoutEdits = false;
+    let autosaveBlocked = false;
     const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const typeClass = { Easy: "type-easy", LSD: "type-lsd", Tempo: "type-tempo", Interval: "type-interval", Strength: "type-strength", Rest: "type-rest" };
@@ -991,6 +1009,89 @@
     };
 
     const $ = (id) => document.getElementById(id);
+
+    function savePlannerState() {
+      if (autosaveBlocked) return;
+      try {
+        const settings = Object.fromEntries(SETTINGS_IDS.map((id) => [id, $(id).value]));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          version: 1,
+          settings,
+          hasWorkoutEdits,
+          plan: {
+            raceDate: state.raceDate && dateKey(state.raceDate),
+            adjustedRaceDate: state.adjustedRaceDate && dateKey(state.adjustedRaceDate),
+            startDate: state.startDate && dateKey(state.startDate),
+            weeks: state.weeks.map((week) => ({ ...week, days: week.days.map(dateKey) })),
+            workouts: state.workouts
+          }
+        }));
+        $("saveStatus").textContent = "Saved in this browser. Workout form changes are saved when you click Save workout.";
+      } catch (error) {
+        $("saveStatus").textContent = `Autosave failed: ${error.message}. Keep this page open to retain your changes.`;
+      }
+    }
+
+    function savedDate(value) {
+      if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        throw new Error("Invalid saved date");
+      }
+      const date = parseLocalDate(value);
+      if (!date || dateKey(date) !== value) throw new Error("Invalid saved date");
+      return date;
+    }
+
+    function restorePlannerState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        if (!saved || saved.version !== 1 || !saved.settings || !saved.plan ||
+            SETTINGS_IDS.some((id) => typeof saved.settings[id] !== "string")) {
+          throw new Error("Unsupported saved plan format");
+        }
+        const plan = saved.plan;
+        if (!Array.isArray(plan.weeks) || !plan.weeks.length || !Array.isArray(plan.workouts)) {
+          throw new Error("Incomplete saved plan");
+        }
+        const weeks = plan.weeks.map((week) => {
+          if (!week || !Number.isInteger(week.number) || typeof week.phase !== "string" ||
+              !Number.isFinite(week.plannedVolume) || !Array.isArray(week.days) || week.days.length !== 7) {
+            throw new Error("Invalid saved week");
+          }
+          return { ...week, days: week.days.map(savedDate) };
+        });
+        const ids = new Set();
+        const workouts = plan.workouts.map((workout) => {
+          if (!workout || typeof workout.id !== "string" || !/^w[a-zA-Z0-9-]+$/.test(workout.id) ||
+              ids.has(workout.id) || !Object.hasOwn(typeClass, workout.type) ||
+              !["title", "duration", "intensity", "fueling", "details"].every((key) => typeof workout[key] === "string") ||
+              !Number.isFinite(workout.distance) || workout.distance < 0 ||
+              !validWorkoutTimes(workout.startTime || "", workout.endTime || "")) {
+            throw new Error("Invalid saved workout");
+          }
+          savedDate(workout.dateKey);
+          ids.add(workout.id);
+          return workout;
+        });
+        const restoredPlan = {
+          raceDate: savedDate(plan.raceDate),
+          adjustedRaceDate: savedDate(plan.adjustedRaceDate),
+          startDate: savedDate(plan.startDate),
+          weeks,
+          workouts
+        };
+        SETTINGS_IDS.forEach((id) => { $(id).value = saved.settings[id]; });
+        Object.assign(state, restoredPlan);
+        hasWorkoutEdits = Boolean(saved.hasWorkoutEdits);
+        $("saveStatus").textContent = "Saved settings and workouts restored from this browser.";
+        return true;
+      } catch (error) {
+        autosaveBlocked = true;
+        $("saveStatus").textContent = `Restore failed: ${error.message}. Existing saved data has not been overwritten. Generate a plan to replace it.`;
+        return false;
+      }
+    }
 
     function parseLocalDate(dateString) {
       if (!dateString || !dateString.includes("-")) return null;
@@ -1050,7 +1151,7 @@
     }
 
     function secondsToPace(seconds) {
-      if (!Number.isFinite(seconds) || seconds <= 0) return "鈥?";
+      if (!Number.isFinite(seconds) || seconds <= 0) return "\u2014";
       const rounded = Math.round(seconds);
       const min = Math.floor(rounded / 60);
       const sec = String(rounded % 60).padStart(2, "0");
@@ -1445,7 +1546,7 @@
           state.workouts.filter((w) => w.dateKey === key).forEach((w) => {
             const chip = document.createElement("div");
             chip.className = `workout-chip ${typeClass[w.type] || "type-rest"}`;
-            chip.innerHTML = `<strong>${escapeHtml(w.title)}</strong><small>${escapeHtml(w.type)} | ${Number(w.distance || 0).toFixed(1)} km | ${escapeHtml(w.duration || "")}</small>`;
+            chip.innerHTML = `<strong>${escapeHtml(w.title)}</strong><small>${escapeHtml(w.type)} | ${Number(w.distance || 0).toFixed(1)} km | ${escapeHtml(w.duration || "")}${w.startTime ? ` | ${escapeHtml(w.startTime)} - ${escapeHtml(w.endTime)}` : ""}</small>`;
             workouts.appendChild(chip);
           });
 
@@ -1542,6 +1643,8 @@
       $("workoutTitle").value = "";
       $("workoutType").value = "Easy";
       $("workoutDuration").value = "";
+      $("workoutStartTime").value = "";
+      $("workoutEndTime").value = "";
       $("workoutDistance").value = "";
       $("workoutIntensity").value = "";
       $("workoutFueling").value = "";
@@ -1565,7 +1668,7 @@
           <div>
             <span class="type-badge ${typeClass[w.type]}">${escapeHtml(w.type)}</span>
             <strong style="display:block;margin-top:6px">${escapeHtml(w.title)}</strong>
-            <span class="hint">${Number(w.distance || 0).toFixed(1)} km | ${escapeHtml(w.duration || "")}${w.intensity ? " | " + escapeHtml(w.intensity) : ""}</span>
+            <span class="hint">${Number(w.distance || 0).toFixed(1)} km | ${escapeHtml(w.duration || "")} | ${w.startTime ? `${escapeHtml(w.startTime)} - ${escapeHtml(w.endTime)}` : "All day"}${w.intensity ? " | " + escapeHtml(w.intensity) : ""}</span>
             ${w.fueling ? `<span class="hint" style="display:block;margin-top:2px">Fueling: ${escapeHtml(w.fueling)}</span>` : ""}
             ${w.details ? `<p class="item-details">${escapeHtml(w.details)}</p>` : ""}
           </div>
@@ -1588,6 +1691,8 @@
       $("workoutTitle").value = w.title;
       $("workoutType").value = w.type;
       $("workoutDuration").value = w.duration;
+      $("workoutStartTime").value = w.startTime || "";
+      $("workoutEndTime").value = w.endTime || "";
       $("workoutDistance").value = w.distance;
       $("workoutIntensity").value = w.intensity;
       $("workoutFueling").value = w.fueling;
@@ -1597,6 +1702,12 @@
 
     function saveWorkout(event) {
       event.preventDefault();
+      const startTime = $("workoutStartTime").value;
+      const endTime = $("workoutEndTime").value;
+      if (!validWorkoutTimes(startTime, endTime)) {
+        showToast("Set both times with end after start, or leave both blank");
+        return;
+      }
       const id = $("workoutId").value || cryptoRandomId();
       const payload = {
         id,
@@ -1604,6 +1715,8 @@
         title: $("workoutTitle").value.trim(),
         type: $("workoutType").value,
         duration: $("workoutDuration").value.trim(),
+        startTime,
+        endTime,
         distance: Number($("workoutDistance").value || 0),
         intensity: $("workoutIntensity").value.trim(),
         fueling: $("workoutFueling").value.trim(),
@@ -1613,11 +1726,13 @@
       const idx = state.workouts.findIndex((w) => w.id === id);
       if (idx >= 0) state.workouts[idx] = payload;
       else state.workouts.push(payload);
+      hasWorkoutEdits = true;
 
       resetForm();
       renderExistingList();
       renderCalendar();
       renderAnalytics();
+      savePlannerState();
       showToast("Workout saved");
     }
 
@@ -1625,10 +1740,12 @@
       const targetId = id || $("workoutId").value;
       if (!targetId) return;
       state.workouts = state.workouts.filter((w) => w.id !== targetId);
+      hasWorkoutEdits = true;
       resetForm();
       renderExistingList();
       renderCalendar();
       renderAnalytics();
+      savePlannerState();
       showToast("Workout deleted");
     }
 
@@ -1655,19 +1772,59 @@
     }
 
     function foldIcsLine(line) {
-      const limit = 74;
+      const encoder = new TextEncoder();
       let output = "";
-      let current = line;
-      while (current.length > limit) {
-        output += current.slice(0, limit) + "\r\n ";
-        current = current.slice(limit);
+      let bytes = 0;
+      for (const character of line) {
+        const size = encoder.encode(character).length;
+        if (bytes + size > 75) {
+          output += "\r\n ";
+          bytes = 1;
+        }
+        output += character;
+        bytes += size;
       }
-      return output + current;
+      return output;
+    }
+
+    function validWorkoutTimes(startTime, endTime) {
+      if (startTime === "" && endTime === "") return true;
+      const pattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+      return typeof startTime === "string" && typeof endTime === "string" &&
+        pattern.test(startTime) && pattern.test(endTime) && endTime > startTime;
+    }
+
+    function icsDateTime(key, time) {
+      const date = savedDate(key);
+      const [hours, minutes] = time.split(":").map(Number);
+      date.setHours(hours, minutes, 0, 0);
+      if (date.getHours() !== hours || date.getMinutes() !== minutes) {
+        throw new Error("Workout time does not exist due to a daylight-saving transition");
+      }
+      return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
     }
 
     function exportIcs() {
       if (!state.workouts.length) {
         showToast("No workouts to export");
+        return;
+      }
+      let eventDates;
+      try {
+        eventDates = state.workouts.map((workout) => {
+          savedDate(workout.dateKey);
+          if (!validWorkoutTimes(workout.startTime || "", workout.endTime || "")) {
+            throw new Error("Set both workout times with end after start");
+          }
+          return workout.startTime
+            ? [`DTSTART:${icsDateTime(workout.dateKey, workout.startTime)}`, `DTEND:${icsDateTime(workout.dateKey, workout.endTime)}`]
+            : [
+                `DTSTART;VALUE=DATE:${icsDate(workout.dateKey)}`,
+                `DTEND;VALUE=DATE:${icsDate(dateKey(addDays(parseLocalDate(workout.dateKey), 1)))}`
+              ];
+        });
+      } catch (error) {
+        showToast(`Export failed: ${error.message}`);
         return;
       }
 
@@ -1681,7 +1838,7 @@
         "METHOD:PUBLISH"
       ];
 
-      state.workouts.forEach((w) => {
+      state.workouts.forEach((w, index) => {
         const description = [
           `Type: ${w.type}`,
           `Distance: ${Number(w.distance || 0).toFixed(1)} km`,
@@ -1696,8 +1853,7 @@
           "BEGIN:VEVENT",
           `UID:${escapeIcs(w.id)}@marathon-training-planner`,
           `DTSTAMP:${stampText}`,
-          `DTSTART;VALUE=DATE:${icsDate(w.dateKey)}`,
-          `DTEND;VALUE=DATE:${icsDate(dateKey(addDays(parseLocalDate(w.dateKey), 1)))}`,
+          ...eventDates[index],
           `SUMMARY:${escapeIcs(w.title)}`,
           `CATEGORIES:${escapeIcs(w.type)}`,
           `DESCRIPTION:${escapeIcs(description)}`,
@@ -1706,7 +1862,7 @@
       });
 
       lines.push("END:VCALENDAR");
-      const ics = lines.map(foldIcsLine).join("\r\n");
+      const ics = lines.map(foldIcsLine).join("\r\n") + "\r\n";
       const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -1715,7 +1871,7 @@
       document.body.appendChild(a);
       a.click();
       a.remove();
-      URL.revokeObjectURL(url);
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       showToast("ICS calendar exported");
     }
 
@@ -1743,12 +1899,26 @@
 
       $("planWeeks").addEventListener("change", autoBalancePhases);
       $("balanceBtn").addEventListener("click", autoBalancePhases);
-      $("generateBtn").addEventListener("click", buildPlan);
+      $("generateBtn").addEventListener("click", () => {
+        if ((hasWorkoutEdits || autosaveBlocked) &&
+            !window.confirm("Generating a plan will replace your saved workouts. Continue?")) return;
+        const previousWeeks = state.weeks;
+        buildPlan();
+        if (state.weeks === previousWeeks) return;
+        hasWorkoutEdits = false;
+        autosaveBlocked = false;
+        savePlannerState();
+      });
       $("exportBtn").addEventListener("click", exportIcs);
       $("closeModal").addEventListener("click", closeModal);
       $("newWorkoutBtn").addEventListener("click", resetForm);
       $("deleteWorkoutBtn").addEventListener("click", () => deleteWorkout());
       $("workoutForm").addEventListener("submit", saveWorkout);
+      $("balanceBtn").addEventListener("click", savePlannerState);
+      SETTINGS_IDS.forEach((id) => {
+        $(id).addEventListener("input", savePlannerState);
+        $(id).addEventListener("change", savePlannerState);
+      });
 
       $("workoutModal").addEventListener("click", (event) => {
         if (event.target === $("workoutModal")) closeModal();
@@ -1760,9 +1930,15 @@
     }
 
     setDefaultRaceDate();
+    const restored = restorePlannerState();
     bindEvents();
     validatePhases();
-    buildPlan();
+    if (restored) {
+      renderAll();
+    } else {
+      buildPlan();
+      savePlannerState();
+    }
 
     if (window.GleanBridge && typeof window.GleanBridge.postMessage === "function") {
       window.GleanBridge.postMessage({
